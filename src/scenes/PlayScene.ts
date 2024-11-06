@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import TilemapManager from "../utils/TilemapManager";
 import MapGenerator from "../utils/MapGenerator";
+import Player from "../sprites/Player";
 
 const Config = {
 	MapWidth: 800 / 25,
@@ -10,6 +11,8 @@ const Config = {
 };
 
 class PlayScene extends Phaser.Scene {
+	private player!: Player;
+
 	constructor() {
 		super({ key: "PlayScene" });
 	}
@@ -28,10 +31,13 @@ class PlayScene extends Phaser.Scene {
 			Config.TileHeight,
 		);
 		tilemapManager.populateTilemap(map);
+
+		this.player = new Player(this, 100, 100);
+		this.physics.add.collider(this.player, tilemapManager.layer);
 	}
 
 	update() {
-		// Update game objects here
+		this.player.update();
 	}
 }
 
