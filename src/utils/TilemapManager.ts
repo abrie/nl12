@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import TextureGenerator from "./TextureGenerator";
-import MapGenerator from "./MapGenerator";
 
 class TilemapManager {
 	private tilemapData: {
@@ -11,27 +10,55 @@ class TilemapManager {
 		layer: Phaser.Tilemaps.TilemapLayer;
 	};
 
-	constructor(scene: Phaser.Scene) {
-		this.tilemapData = this.createTilemap(scene);
-		const map = MapGenerator.generateMap(10, 10, 5);
-		this.populateTilemap(map);
+	constructor(
+		scene: Phaser.Scene,
+		width: number,
+		height: number,
+		tileWidth: number,
+		tileHeight: number,
+	) {
+		this.tilemapData = this.createTilemap(
+			scene,
+			width,
+			height,
+			tileWidth,
+			tileHeight,
+		);
 	}
 
-	private createTilemap(scene: Phaser.Scene) {
-		TextureGenerator.generateTexture(scene, 0xff00ff, 32, 32, "empty");
-		TextureGenerator.generateTexture(scene, 0x00ff00, 32, 32, "filled");
+	private createTilemap(
+		scene: Phaser.Scene,
+		width: number,
+		height: number,
+		tileWidth: number,
+		tileHeight: number,
+	) {
+		TextureGenerator.generateTexture(
+			scene,
+			0xff00ff,
+			tileWidth,
+			tileHeight,
+			"empty",
+		);
+		TextureGenerator.generateTexture(
+			scene,
+			0x00ff00,
+			tileWidth,
+			tileHeight,
+			"filled",
+		);
 
 		const tilemap = scene.make.tilemap({
-			width: 10,
-			height: 10,
-			tileWidth: 32,
-			tileHeight: 32,
+			width,
+			height,
+			tileWidth,
+			tileHeight,
 		});
 		const filledTileset = tilemap.addTilesetImage(
 			"filled",
 			undefined,
-			32,
-			32,
+			tileWidth,
+			tileHeight,
 			0,
 			0,
 			1,
@@ -43,8 +70,8 @@ class TilemapManager {
 		const emptyTileset = tilemap.addTilesetImage(
 			"empty",
 			undefined,
-			32,
-			32,
+			tileWidth,
+			tileHeight,
 			0,
 			0,
 			2,
@@ -61,10 +88,6 @@ class TilemapManager {
 			throw new Error("Failed to create layer");
 		}
 		this.setupCollision({ layer, filledTileset });
-
-		if (!tilemap || !emptyTileset || !filledTileset || !layer) {
-			throw new Error("Tilemap data properties cannot be null");
-		}
 
 		return { scene, tilemap, emptyTileset, filledTileset, layer };
 	}
