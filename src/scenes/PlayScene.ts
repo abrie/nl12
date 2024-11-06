@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import TilemapManager from "../utils/TilemapManager";
+import MapGenerator from "../utils/MapGenerator";
 
 class PlayScene extends Phaser.Scene {
 	constructor() {
@@ -11,9 +12,9 @@ class PlayScene extends Phaser.Scene {
 	}
 
 	create() {
+		const map = MapGenerator.generateMap(10, 10, 5);
 		const tilemapManager = new TilemapManager(this);
-		tilemapManager.setTile(2, 2, true); // Example usage
-		tilemapManager.setTile(3, 3, false); // Exaeple usage
+		tilemapManager.populateTilemap(map);
 	}
 
 	update() {

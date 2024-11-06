@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import TextureGenerator from "./TextureGenerator";
+import MapGenerator from "./MapGenerator";
 
 class TilemapManager {
 	private tilemapData: {
@@ -12,6 +13,8 @@ class TilemapManager {
 
 	constructor(scene: Phaser.Scene) {
 		this.tilemapData = this.createTilemap(scene);
+		const map = MapGenerator.generateMap(10, 10, 5);
+		this.populateTilemap(map);
 	}
 
 	private createTilemap(scene: Phaser.Scene) {
@@ -80,6 +83,14 @@ class TilemapManager {
 		const { tilemap, filledTileset, emptyTileset, layer } = this.tilemapData;
 		const tileIndex = filled ? filledTileset.firstgid : emptyTileset.firstgid;
 		tilemap.putTileAt(tileIndex, x, y, true, layer);
+	}
+
+	public populateTilemap(map: boolean[][]) {
+		for (let y = 0; y < map.length; y++) {
+			for (let x = 0; x < map[y].length; x++) {
+				this.setTile(x, y, map[y][x]);
+			}
+		}
 	}
 }
 
