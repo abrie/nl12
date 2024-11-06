@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 class Collision {
   constructor(scene, platforms) {
     this.scene = scene;

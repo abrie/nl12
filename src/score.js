@@ -1,5 +1,3 @@
-import Phaser from 'phaser';
-
 class Score {
   constructor(scene) {
     this.scene = scene;
