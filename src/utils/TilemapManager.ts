@@ -33,6 +33,9 @@ class TilemapManager {
 			0,
 			1,
 		);
+		if (!filledTileset) {
+			throw new Error("Failed to create 'filled' TilesetImage");
+		}
 
 		const emptyTileset = tilemap.addTilesetImage(
 			"empty",
@@ -43,11 +46,17 @@ class TilemapManager {
 			0,
 			2,
 		);
+		if (!emptyTileset) {
+			throw new Error("Failed to create 'empty' TilesetImage");
+		}
 		const layer = tilemap.createBlankLayer("layer", [
 			emptyTileset,
 			filledTileset,
 		]);
 
+		if (!layer) {
+			throw new Error("Failed to create layer");
+		}
 		this.setupCollision({ layer, filledTileset });
 
 		if (!tilemap || !emptyTileset || !filledTileset || !layer) {
@@ -57,18 +66,19 @@ class TilemapManager {
 		return { scene, tilemap, emptyTileset, filledTileset, layer };
 	}
 
-	private setupCollision({ layer, filledTileset }: { layer: Phaser.Tilemaps.TilemapLayer, filledTileset: Phaser.Tilemaps.Tileset }) {
-		layer.setCollisionBetween(
-			filledTileset.firstgid,
-			filledTileset.firstgid,
-		);
+	private setupCollision({
+		layer,
+		filledTileset,
+	}: {
+		layer: Phaser.Tilemaps.TilemapLayer;
+		filledTileset: Phaser.Tilemaps.Tileset;
+	}) {
+		layer.setCollisionBetween(filledTileset.firstgid, filledTileset.firstgid);
 	}
 
 	public setTile(x: number, y: number, filled: boolean) {
 		const { tilemap, filledTileset, emptyTileset, layer } = this.tilemapData;
-		const tileIndex = filled
-			? filledTileset.firstgid
-			: emptyTileset.firstgid;
+		const tileIndex = filled ? filledTileset.firstgid : emptyTileset.firstgid;
 		tilemap.putTileAt(tileIndex, x, y, true, layer);
 	}
 }
