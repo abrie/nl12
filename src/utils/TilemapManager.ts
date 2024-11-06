@@ -2,28 +2,29 @@ import Phaser from "phaser";
 import TextureGenerator from "./TextureGenerator";
 
 class TilemapManager {
-	private scene: Phaser.Scene;
-	private tilemap: Phaser.Tilemaps.Tilemap;
-	private emptyTileset: Phaser.Tilemaps.Tileset;
-	private filledTileset: Phaser.Tilemaps.Tileset;
-	private layer: Phaser.Tilemaps.TilemapLayer;
+	private tilemapData: {
+		scene: Phaser.Scene;
+		tilemap: Phaser.Tilemaps.Tilemap;
+		emptyTileset: Phaser.Tilemaps.Tileset;
+		filledTileset: Phaser.Tilemaps.Tileset;
+		layer: Phaser.Tilemaps.TilemapLayer;
+	};
 
 	constructor(scene: Phaser.Scene) {
-		this.scene = scene;
-		this.createTilemap();
+		this.tilemapData = this.createTilemap(scene);
 	}
 
-	private createTilemap() {
-		TextureGenerator.generateTexture(this.scene, 0xff00ff, 32, 32, "empty");
-		TextureGenerator.generateTexture(this.scene, 0x00ff00, 32, 32, "filled");
+	private createTilemap(scene: Phaser.Scene) {
+		TextureGenerator.generateTexture(scene, 0xff00ff, 32, 32, "empty");
+		TextureGenerator.generateTexture(scene, 0x00ff00, 32, 32, "filled");
 
-		this.tilemap = this.scene.make.tilemap({
+		const tilemap = scene.make.tilemap({
 			width: 10,
 			height: 10,
 			tileWidth: 32,
 			tileHeight: 32,
 		});
-		this.filledTileset = this.tilemap.addTilesetImage(
+		const filledTileset = tilemap.addTilesetImage(
 			"filled",
 			undefined,
 			32,
@@ -32,8 +33,11 @@ class TilemapManager {
 			0,
 			1,
 		);
+		if (!filledTileset) {
+			throw new Error("Failed to create 'filled' TilesetImage");
+		}
 
-		this.emptyTileset = this.tilemap.addTilesetImage(
+		const emptyTileset = tilemap.addTilesetImage(
 			"empty",
 			undefined,
 			32,
@@ -42,26 +46,40 @@ class TilemapManager {
 			0,
 			2,
 		);
-		this.layer = this.tilemap.createBlankLayer("layer", [
-			this.emptyTileset,
-			this.filledTileset,
+		if (!emptyTileset) {
+			throw new Error("Failed to create 'empty' TilesetImage");
+		}
+		const layer = tilemap.createBlankLayer("layer", [
+			emptyTileset,
+			filledTileset,
 		]);
 
-		this.setupCollision();
+		if (!layer) {
+			throw new Error("Failed to create layer");
+		}
+		this.setupCollision({ layer, filledTileset });
+
+		if (!tilemap || !emptyTileset || !filledTileset || !layer) {
+			throw new Error("Tilemap data properties cannot be null");
+		}
+
+		return { scene, tilemap, emptyTileset, filledTileset, layer };
 	}
 
-	private setupCollision() {
-		this.layer.setCollisionBetween(
-			this.filledTileset.firstgid,
-			this.filledTileset.firstgid,
-		);
+	private setupCollision({
+		layer,
+		filledTileset,
+	}: {
+		layer: Phaser.Tilemaps.TilemapLayer;
+		filledTileset: Phaser.Tilemaps.Tileset;
+	}) {
+		layer.setCollisionBetween(filledTileset.firstgid, filledTileset.firstgid);
 	}
 
 	public setTile(x: number, y: number, filled: boolean) {
-		const tileIndex = filled
-			? this.filledTileset.firstgid
-			: this.emptyTileset.firstgid;
-		this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
+		const { tilemap, filledTileset, emptyTileset, layer } = this.tilemapData;
+		const tileIndex = filled ? filledTileset.firstgid : emptyTileset.firstgid;
+		tilemap.putTileAt(tileIndex, x, y, true, layer);
 	}
 }
 
