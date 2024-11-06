@@ -2,6 +2,13 @@ import Phaser from "phaser";
 import TilemapManager from "../utils/TilemapManager";
 import MapGenerator from "../utils/MapGenerator";
 
+const Config = {
+	MapWidth: 800 / 25,
+	MapHeight: 600 / 25,
+	TileWidth: 25,
+	TileHeight: 25,
+};
+
 class PlayScene extends Phaser.Scene {
 	constructor() {
 		super({ key: "PlayScene" });
@@ -12,8 +19,14 @@ class PlayScene extends Phaser.Scene {
 	}
 
 	create() {
-		const map = MapGenerator.generateMap(10, 10, 5);
-		const tilemapManager = new TilemapManager(this);
+		const map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
+		const tilemapManager = new TilemapManager(
+			this,
+			Config.MapWidth,
+			Config.MapHeight,
+			Config.TileWidth,
+			Config.TileHeight,
+		);
 		tilemapManager.populateTilemap(map);
 	}
 
