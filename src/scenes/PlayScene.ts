@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import TextureGenerator from "../utils/TextureGenerator";
 
 class PlayScene extends Phaser.Scene {
   constructor() {
@@ -10,7 +11,9 @@ class PlayScene extends Phaser.Scene {
   }
 
   create() {
-    // Initialize game objects here
+    const textureName = "solidColorTexture";
+    TextureGenerator.generateTexture(this, 0xff0000, 100, 100, textureName);
+    this.add.image(400, 300, textureName);
   }
 
   update() {
