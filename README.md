@@ -1,2 +1,1 @@
-# nl12
-Another experiment using Copilot to make a game
+Repository initialized with the output of `yarn create vite --template vanilla-ts`
