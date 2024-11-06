@@ -1,21 +1,20 @@
 import Phaser from "phaser";
+import TextureGenerator from "../utils/TextureGenerator";
 
 class PlayScene extends Phaser.Scene {
-  constructor() {
-    super({ key: "PlayScene" });
-  }
+	constructor() {
+		super({ key: "PlayScene" });
+	}
 
-  preload() {
-    // Load assets here
-  }
+	preload() {
+		// Load assets here
+	}
 
-  create() {
-    // Initialize game objects here
-  }
+	create() {}
 
-  update() {
-    // Update game objects here
-  }
+	update() {
+		// Update game objects here
+	}
 }
 
 export default PlayScene;
