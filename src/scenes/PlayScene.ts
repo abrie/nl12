@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import TextureGenerator from "../utils/TextureGenerator";
 import TilemapManager from "../utils/TilemapManager";
 
 class PlayScene extends Phaser.Scene {
@@ -14,6 +13,7 @@ class PlayScene extends Phaser.Scene {
 	create() {
 		const tilemapManager = new TilemapManager(this);
 		tilemapManager.setTile(2, 2, true); // Example usage
+		tilemapManager.setTile(3, 3, false); // Exaeple usage
 	}
 
 	update() {
