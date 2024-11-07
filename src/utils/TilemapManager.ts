@@ -1,30 +1,16 @@
 import Phaser from "phaser";
 import TextureGenerator from "./TextureGenerator";
 
-class TilemapManager {
-	private tilemapData: {
-		scene: Phaser.Scene;
-		tilemap: Phaser.Tilemaps.Tilemap;
-		emptyTileset: Phaser.Tilemaps.Tileset;
-		filledTileset: Phaser.Tilemaps.Tileset;
-		layer: Phaser.Tilemaps.TilemapLayer;
-	};
+type TilemapData = {
+	scene: Phaser.Scene;
+	tilemap: Phaser.Tilemaps.Tilemap;
+	emptyTileset: Phaser.Tilemaps.Tileset;
+	filledTileset: Phaser.Tilemaps.Tileset;
+	layer: Phaser.Tilemaps.TilemapLayer;
+};
 
-	constructor(
-		scene: Phaser.Scene,
-		width: number,
-		height: number,
-		tileWidth: number,
-		tileHeight: number,
-	) {
-		this.tilemapData = this.createTilemap(
-			scene,
-			width,
-			height,
-			tileWidth,
-			tileHeight,
-		);
-	}
+class TilemapManager {
+	constructor() {}
 
 	private createTilemap(
 		scene: Phaser.Scene,
@@ -32,7 +18,7 @@ class TilemapManager {
 		height: number,
 		tileWidth: number,
 		tileHeight: number,
-	) {
+	): TilemapData {
 		TextureGenerator.generateTexture(
 			scene,
 			0xff00ff,
@@ -102,16 +88,16 @@ class TilemapManager {
 		layer.setCollisionBetween(filledTileset.firstgid, filledTileset.firstgid);
 	}
 
-	public setTile(x: number, y: number, filled: boolean) {
-		const { tilemap, filledTileset, emptyTileset, layer } = this.tilemapData;
+	public setTile(x: number, y: number, filled: boolean, tilemapData: TilemapData) {
+		const { tilemap, filledTileset, emptyTileset, layer } = tilemapData;
 		const tileIndex = filled ? filledTileset.firstgid : emptyTileset.firstgid;
 		tilemap.putTileAt(tileIndex, x, y, true, layer);
 	}
 
-	public populateTilemap(map: boolean[][]) {
+	public populateTilemap(map: boolean[][], tilemapData: TilemapData) {
 		for (let y = 0; y < map.length; y++) {
 			for (let x = 0; x < map[y].length; x++) {
-				this.setTile(x, y, map[y][x]);
+				this.setTile(x, y, map[y][x], tilemapData);
 			}
 		}
 	}
