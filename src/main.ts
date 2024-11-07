@@ -5,7 +5,10 @@ const config = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
-  scene: [PlayScene]
+  scene: [PlayScene],
+  physics: {
+    default: "arcade",
+  }
 };
 
 const game = new Phaser.Game(config);
