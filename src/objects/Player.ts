@@ -10,6 +10,7 @@ enum PlayerState {
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   private state: PlayerState;
+  private stateText: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     TextureGenerator.generateTexture(scene, 0x0000ff, 32, 32, "player");
@@ -19,6 +20,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.state = PlayerState.IDLE;
     this.setCollideWorldBounds(true);
     this.setGravityY(300);
+
+    this.stateText = scene.add.text(10, 10, 'State: IDLE', { fontSize: '12px', fill: '#fff' });
   }
 
   update(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
@@ -53,12 +56,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
         break;
     }
+
+    this.updateStateText();
   }
 
   handleCollision(tile: Phaser.Tilemaps.Tile) {
     if (tile.index !== -1) {
       this.setVelocity(0);
     }
+  }
+
+  private updateStateText() {
+    this.stateText.setText(`State: ${PlayerState[this.state]}`);
   }
 }
 
