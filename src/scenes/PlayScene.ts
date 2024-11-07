@@ -20,14 +20,15 @@ class PlayScene extends Phaser.Scene {
 
 	create() {
 		const map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
-		const tilemapManager = new TilemapManager(
+		const tilemapManager = new TilemapManager();
+		const tilemapData = tilemapManager.createTilemap(
 			this,
 			Config.MapWidth,
 			Config.MapHeight,
 			Config.TileWidth,
 			Config.TileHeight,
 		);
-		tilemapManager.populateTilemap(map);
+		tilemapManager.populateTilemap(map, tilemapData);
 	}
 
 	update() {
