@@ -12,7 +12,7 @@ type TilemapData = {
 class TilemapManager {
 	constructor() {}
 
-	private createTilemap(
+	createTilemap(
 		scene: Phaser.Scene,
 		width: number,
 		height: number,
@@ -85,10 +85,15 @@ class TilemapManager {
 		layer: Phaser.Tilemaps.TilemapLayer;
 		filledTileset: Phaser.Tilemaps.Tileset;
 	}) {
-		layer.setCollisionBetween(filledTileset.firstgid, filledTileset.firstgid);
+		layer.setCollision(filledTileset.firstgid);
 	}
 
-	public setTile(x: number, y: number, filled: boolean, tilemapData: TilemapData) {
+	public setTile(
+		x: number,
+		y: number,
+		filled: boolean,
+		tilemapData: TilemapData,
+	) {
 		const { tilemap, filledTileset, emptyTileset, layer } = tilemapData;
 		const tileIndex = filled ? filledTileset.firstgid : emptyTileset.firstgid;
 		tilemap.putTileAt(tileIndex, x, y, true, layer);
