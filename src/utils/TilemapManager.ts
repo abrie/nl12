@@ -106,6 +106,27 @@ class TilemapManager {
 			}
 		}
 	}
+
+	public findRandomNonFilledTile(tilemapData: TilemapData): { x: number, y: number } | null {
+		const { tilemap, emptyTileset } = tilemapData;
+		const nonFilledTiles: { x: number, y: number }[] = [];
+
+		for (let y = 0; y < tilemap.height; y++) {
+			for (let x = 0; x < tilemap.width; x++) {
+				const tile = tilemap.getTileAt(x, y);
+				if (tile && tile.index === emptyTileset.firstgid) {
+					nonFilledTiles.push({ x, y });
+				}
+			}
+		}
+
+		if (nonFilledTiles.length === 0) {
+			return null;
+		}
+
+		const randomIndex = Math.floor(Math.random() * nonFilledTiles.length);
+		return nonFilledTiles[randomIndex];
+	}
 }
 
 export default TilemapManager;
