@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import TilemapManager from "../utils/TilemapManager";
 import MapGenerator from "../utils/MapGenerator";
-import Player from "../sprites/Player";
+import TextureGenerator from "../utils/TextureGenerator";
 
 const Config = {
 	MapWidth: 800 / 25,
@@ -11,7 +11,7 @@ const Config = {
 };
 
 class PlayScene extends Phaser.Scene {
-	private player!: Player;
+	private player!: Phaser.Physics.Arcade.Sprite;
 
 	constructor() {
 		super({ key: "PlayScene" });
@@ -32,12 +32,31 @@ class PlayScene extends Phaser.Scene {
 		);
 		tilemapManager.populateTilemap(map);
 
-		this.player = new Player(this, 100, 100);
+		this.createPlayer();
 		this.physics.add.collider(this.player, tilemapManager.layer);
 	}
 
 	update() {
-		this.player.update();
+		// Update game objects here
+	}
+
+	private createPlayer() {
+		TextureGenerator.generateTexture(this, 0xff0000, Config.TileWidth, Config.TileHeight, "player");
+
+		let x, y;
+		do {
+			x = Phaser.Math.Between(0, Config.MapWidth - 1);
+			y = Phaser.Math.Between(0, Config.MapHeight - 1);
+		} while (this.isTileFilled(x, y));
+
+		this.player = this.physics.add.sprite(x * Config.TileWidth, y * Config.TileHeight, "player");
+		this.player.setCollideWorldBounds(true);
+		this.player.setGravityY(300);
+	}
+
+	private isTileFilled(x: number, y: number): boolean {
+		const tile = this.tilemapManager.layer.getTileAt(x, y);
+		return tile && tile.index === this.tilemapManager.filledTileset.firstgid;
 	}
 }
 

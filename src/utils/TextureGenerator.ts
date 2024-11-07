@@ -18,3 +18,4 @@ class TextureGenerator {
 }
 
 export default TextureGenerator;
+export { TextureGenerator };

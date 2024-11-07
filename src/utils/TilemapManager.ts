@@ -115,6 +115,20 @@ class TilemapManager {
 			}
 		}
 	}
+
+	public getRandomNonFilledTile(): { x: number, y: number } {
+		let x, y;
+		do {
+			x = Phaser.Math.Between(0, this.tilemapData.tilemap.width - 1);
+			y = Phaser.Math.Between(0, this.tilemapData.tilemap.height - 1);
+		} while (this.isTileFilled(x, y));
+		return { x, y };
+	}
+
+	private isTileFilled(x: number, y: number): boolean {
+		const tile = this.tilemapData.layer.getTileAt(x, y);
+		return tile && tile.index === this.tilemapData.filledTileset.firstgid;
+	}
 }
 
 export default TilemapManager;
