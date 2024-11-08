@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import TextureGenerator from "../utils/TextureGenerator";
 
 enum PlayerState {
   IDLE = "IDLE",
@@ -13,6 +14,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   private stateMachine: { [key in PlayerState]: PlayerState[] };
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
+    TextureGenerator.generateTexture(scene, 0x0000ff, 25, 25, "player");
     super(scene, x, y, "player");
     this.currentState = PlayerState.IDLE;
     this.stateMachine = {
