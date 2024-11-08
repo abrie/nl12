@@ -11,7 +11,7 @@ const Config = {
 };
 
 class PlayScene extends Phaser.Scene {
-	private player: Player;
+	private player!: Player;
 
 	constructor() {
 		super({ key: "PlayScene" });

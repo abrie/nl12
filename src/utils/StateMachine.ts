@@ -7,7 +7,7 @@ export enum PlayerState {
 }
 
 export const stateMachine = {
-  [PlayerState.IDLE]: [PlayerState.RUNNING, PlayerState.JUMPING],
+  [PlayerState.IDLE]: [PlayerState.RUNNING, PlayerState.JUMPING, PlayerState.FALLING],
   [PlayerState.RUNNING]: [PlayerState.JUMPING, PlayerState.IDLE, PlayerState.GLIDING],
   [PlayerState.JUMPING]: [PlayerState.FALLING],
   [PlayerState.FALLING]: [PlayerState.IDLE, PlayerState.GLIDING],
