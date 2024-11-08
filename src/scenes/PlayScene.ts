@@ -14,6 +14,11 @@ class PlayScene extends Phaser.Scene {
 	private player!: Player;
 	private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 	private jumpKey!: Phaser.Input.Keyboard.Key;
+	private inputState: { left: boolean; right: boolean; jump: boolean } = {
+		left: false,
+		right: false,
+		jump: false,
+	};
 
 	constructor() {
 		super({ key: "PlayScene" });
@@ -47,17 +52,21 @@ class PlayScene extends Phaser.Scene {
 
 	update() {
 		if (this.player) {
-			this.player.update();
+			this.inputState.left = this.cursors.left.isDown;
+			this.inputState.right = this.cursors.right.isDown;
+			this.inputState.jump = this.jumpKey.isDown;
 
-			if (this.cursors.left.isDown) {
+			this.player.update(this.inputState);
+
+			if (this.inputState.left) {
 				this.player.setVelocityX(-160);
-			} else if (this.cursors.right.isDown) {
+			} else if (this.inputState.right) {
 				this.player.setVelocityX(160);
 			} else {
 				this.player.setVelocityX(0);
 			}
 
-			if (this.jumpKey.isDown && this.player.body.blocked.down) {
+			if (this.inputState.jump && this.player.body.blocked.down) {
 				this.player.setVelocityY(-330);
 			}
 		}
