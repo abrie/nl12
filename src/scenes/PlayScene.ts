@@ -41,7 +41,7 @@ class PlayScene extends Phaser.Scene {
 			this.player = new Player(this, playerStart.x * Config.TileWidth, playerStart.y * Config.TileHeight);
 			this.physics.add.collider(this.player, tilemapData.layer);
 			this.cursors = this.input.keyboard.createCursorKeys();
-			this.jumpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+			this.jumpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
 		}
 	}
 

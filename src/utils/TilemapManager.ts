@@ -127,6 +127,11 @@ class TilemapManager {
 		const randomIndex = Math.floor(Math.random() * nonFilledTiles.length);
 		return nonFilledTiles[randomIndex];
 	}
+
+	public managePlayerInteractions(player: Phaser.Physics.Arcade.Sprite, tilemapData: TilemapData) {
+		const { layer } = tilemapData;
+		player.scene.physics.add.collider(player, layer);
+	}
 }
 
 export default TilemapManager;
