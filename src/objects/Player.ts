@@ -12,6 +12,7 @@ enum PlayerState {
 class Player extends Phaser.Physics.Arcade.Sprite {
   private currentState: PlayerState;
   private stateMachine: { [key in PlayerState]: PlayerState[] };
+  private stateText: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     TextureGenerator.generateTexture(scene, 0x0000ff, 25, 25, "player");
@@ -28,6 +29,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
     this.setCollideWorldBounds(true);
     this.setGravityY(300);
+
+    const textStyle = { font: "12px Arial", fill: "#ffffff" };
+    this.stateText = this.scene.add.text(this.x, this.y - 20, this.currentState, textStyle).setOrigin(0.5);
   }
 
   update() {
@@ -48,6 +52,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.handleGlidingState();
         break;
     }
+
+    this.printCurrentState();
   }
 
   private handleIdleState() {
@@ -92,6 +98,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.stateMachine[this.currentState].includes(newState)) {
       this.currentState = newState;
     }
+  }
+
+  private printCurrentState() {
+    this.stateText.setText(this.currentState);
+    this.stateText.setPosition(this.x, this.y - 20);
   }
 }
 
