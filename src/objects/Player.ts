@@ -29,6 +29,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 		TextureGenerator.generateTexture(scene, 0x0000ff, width, height, "player");
 		this.setTexture("player");
+
+		this.setGravityY(300); // Set gravity for the player
 	}
 
 	private stateMachine = {

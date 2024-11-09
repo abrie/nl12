@@ -8,6 +8,9 @@ const config = {
 	scene: [PlayScene],
 	physics: {
 		default: "arcade",
+		arcade: {
+			gravity: { y: 300 },
+		},
 	},
 };
 
