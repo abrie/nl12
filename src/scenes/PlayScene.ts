@@ -45,12 +45,19 @@ class PlayScene extends Phaser.Scene {
 
 		const playerStart = tilemapManager.findRandomNonFilledTile(tilemapData);
 		if (playerStart) {
-			this.player = new Player(this, playerStart.x * Config.TileWidth, playerStart.y * Config.TileHeight);
+			this.player = new Player(
+				this,
+				playerStart.x * Config.TileWidth,
+				playerStart.y * Config.TileHeight,
+				Config.TileWidth,
+				Config.TileHeight,
+			);
 			this.physics.add.existing(this.player);
 		}
 	}
 
 	update() {
+		this.inputManager.update();
 		const inputs = this.inputManager.getInputs();
 		if (this.player) {
 			this.player.updateState(inputs);
