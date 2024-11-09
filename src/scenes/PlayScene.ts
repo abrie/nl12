@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import TilemapManager from "../utils/TilemapManager";
 import MapGenerator from "../utils/MapGenerator";
-import InputManager from "../utils/InputManager";
+import InputManager, { Inputs } from "../utils/InputManager";
 import Player from "../objects/Player";
 
 const Config = {

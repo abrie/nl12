@@ -1,7 +1,9 @@
 import Phaser from "phaser";
 
+export type Inputs = { up: boolean; down: boolean; left: boolean; right: boolean };
+
 class InputManager {
-	private inputs: { up: boolean; down: boolean; left: boolean; right: boolean };
+	private inputs: Inputs;
 	private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
 	constructor(scene: Phaser.Scene) {
