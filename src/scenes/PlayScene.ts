@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import TilemapManager from "../utils/TilemapManager";
 import MapGenerator from "../utils/MapGenerator";
 import InputManager from "../utils/InputManager";
+import Player from "../objects/Player";
 
 const Config = {
 	MapWidth: 800 / 25,
@@ -12,6 +13,7 @@ const Config = {
 
 class PlayScene extends Phaser.Scene {
 	private inputManager: InputManager;
+	private player: Player;
 
 	constructor() {
 		super({ key: "PlayScene" });
@@ -40,11 +42,19 @@ class PlayScene extends Phaser.Scene {
 		);
 
 		this.inputManager = new InputManager(this);
+
+		const playerStart = tilemapManager.findRandomNonFilledTile(tilemapData);
+		if (playerStart) {
+			this.player = new Player(this, playerStart.x * Config.TileWidth, playerStart.y * Config.TileHeight);
+			this.physics.add.existing(this.player);
+		}
 	}
 
 	update() {
 		const inputs = this.inputManager.getInputs();
-		// Update game objects based on inputs here
+		if (this.player) {
+			this.player.updateState(inputs);
+		}
 	}
 }
 

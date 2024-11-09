@@ -19,6 +19,10 @@ class InputManager {
   public getInputs() {
     return this.inputs;
   }
+
+  public isJumping() {
+    return this.inputs.up;
+  }
 }
 
 export default InputManager;
