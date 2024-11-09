@@ -32,9 +32,14 @@ class PlayScene extends Phaser.Scene {
 			Config.TileHeight,
 		);
 		tilemapManager.populateTilemap(map, tilemapData);
-		this.physics.world.setBounds(0, 0, Config.MapWidth * Config.TileWidth, Config.MapHeight * Config.TileHeight);
+		this.physics.world.setBounds(
+			0,
+			0,
+			Config.MapWidth * Config.TileWidth,
+			Config.MapHeight * Config.TileHeight,
+		);
 
-		this.inputManager = new InputManager();
+		this.inputManager = new InputManager(this);
 	}
 
 	update() {
