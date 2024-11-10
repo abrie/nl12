@@ -47,16 +47,28 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private stateMachine = {
 		[PlayerState.IDLE]: {
 			onEnter: () => {},
-			onExecute: () => {},
+			onExecute: (inputs: { left: boolean; right: boolean }) => {
+				if (inputs.left || inputs.right) {
+					this.nextState = PlayerState.RUNNING;
+				}
+			},
 			onExit: () => {},
 			onCollision: () => {
 				this.nextState = PlayerState.IDLE;
 			},
 		},
 		[PlayerState.RUNNING]: {
-			onEnter: () => {},
+			onEnter: (inputs: { left: boolean; right: boolean }) => {
+				if (inputs.left) {
+					this.setVelocityX(-200);
+				} else if (inputs.right) {
+					this.setVelocityX(200);
+				}
+			},
 			onExecute: () => {},
-			onExit: () => {},
+			onExit: () => {
+				this.setVelocityX(0);
+			},
 			onCollision: () => {
 				this.nextState = PlayerState.IDLE;
 			},
@@ -100,9 +112,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		if (this.nextState !== this.currentState) {
 			this.stateMachine[this.currentState].onExit();
 			this.currentState = this.nextState;
-			this.stateMachine[this.currentState].onEnter();
+			this.stateMachine[this.currentState].onEnter(inputs);
 		}
-		this.stateMachine[this.currentState].onExecute();
+		this.stateMachine[this.currentState].onExecute(inputs);
 	}
 }
 
