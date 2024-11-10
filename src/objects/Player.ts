@@ -71,6 +71,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateMachine[this.currentState].onEnter();
 		}
 		this.stateMachine[this.currentState].onExecute();
+
+		// Handle collisions with filled tiles
+		if (this.body.blocked.down || this.body.touching.down) {
+			this.setVelocityY(0);
+		}
+		if (this.body.blocked.left || this.body.touching.left) {
+			this.setVelocityX(0);
+		}
+		if (this.body.blocked.right || this.body.touching.right) {
+			this.setVelocityX(0);
+		}
 	}
 }
 

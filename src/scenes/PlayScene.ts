@@ -53,6 +53,7 @@ class PlayScene extends Phaser.Scene {
 				Config.TileHeight,
 			);
 			this.physics.add.existing(this.player);
+			this.physics.add.collider(this.player, tilemapData.layer);
 		}
 	}
 
@@ -61,6 +62,7 @@ class PlayScene extends Phaser.Scene {
 		const inputs = this.inputManager.getInputs();
 		if (this.player) {
 			this.player.updateState(inputs);
+			this.physics.collide(this.player, this.physics.world.bounds);
 		}
 	}
 }
