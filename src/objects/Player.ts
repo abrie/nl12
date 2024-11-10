@@ -115,6 +115,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateMachine[this.currentState].onEnter(inputs);
 		}
 		this.stateMachine[this.currentState].onExecute(inputs);
+
+		// Print the current state of the player over the player sprite using a bright, small, legible font
+		const stateText = this.scene.add.text(this.x, this.y - 20, PlayerState[this.currentState], {
+			fontSize: '12px',
+			color: '#ffffff',
+			backgroundColor: '#000000',
+		});
+		stateText.setOrigin(0.5, 0.5);
 	}
 }
 
