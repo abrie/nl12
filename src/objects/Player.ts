@@ -33,6 +33,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		});
 		this.setTexture("player");
 		this.setOrigin(0, 0);
+
+		this.scene.physics.add.collider(this, this.scene.physics.world.bounds, this.handleCollision, undefined, this);
 	}
 
 	private stateMachine = {
@@ -40,28 +42,47 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			onEnter: () => {},
 			onExecute: () => {},
 			onExit: () => {},
+			onCollision: () => {
+				this.nextState = PlayerState.IDLE;
+			},
 		},
 		[PlayerState.RUNNING]: {
 			onEnter: () => {},
 			onExecute: () => {},
 			onExit: () => {},
+			onCollision: () => {
+				this.nextState = PlayerState.IDLE;
+			},
 		},
 		[PlayerState.JUMPING]: {
 			onEnter: () => {},
 			onExecute: () => {},
 			onExit: () => {},
+			onCollision: () => {
+				this.nextState = PlayerState.FALLING;
+			},
 		},
 		[PlayerState.FALLING]: {
 			onEnter: () => {},
 			onExecute: () => {},
 			onExit: () => {},
+			onCollision: () => {
+				this.nextState = PlayerState.IDLE;
+			},
 		},
 		[PlayerState.GLIDING]: {
 			onEnter: () => {},
 			onExecute: () => {},
 			onExit: () => {},
+			onCollision: () => {
+				this.nextState = PlayerState.FALLING;
+			},
 		},
 	};
+
+	private handleCollision() {
+		this.stateMachine[this.currentState].onCollision();
+	}
 
 	public updateState(inputs: {
 		up: boolean;
