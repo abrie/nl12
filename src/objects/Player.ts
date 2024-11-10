@@ -27,10 +27,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
 
-		TextureGenerator.generateTexture(scene, 0x0000ff, width, height, "player", { color: 0xff0000, thickness: 2 });
+		TextureGenerator.generateTexture(scene, 0x0000ff, width, height, "player", {
+			color: 0xff0000,
+			thickness: 2,
+		});
 		this.setTexture("player");
-
-		this.setGravityY(300); // Set gravity for the player
+		this.setOrigin(0, 0);
 	}
 
 	private stateMachine = {
