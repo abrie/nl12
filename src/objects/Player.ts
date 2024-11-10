@@ -87,7 +87,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		},
 	};
 
-	private handleCollision() {
+	handleCollision() {
 		this.stateMachine[this.currentState].onCollision();
 	}
 
