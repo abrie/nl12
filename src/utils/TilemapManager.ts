@@ -25,6 +25,7 @@ class TilemapManager {
 			tileWidth,
 			tileHeight,
 			"empty",
+			{ color: 0x000000, thickness: 1 },
 		);
 		TextureGenerator.generateTexture(
 			scene,
@@ -32,6 +33,7 @@ class TilemapManager {
 			tileWidth,
 			tileHeight,
 			"filled",
+			{ color: 0x000000, thickness: 1 },
 		);
 
 		const tilemap = scene.make.tilemap({
