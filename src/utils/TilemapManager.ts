@@ -21,7 +21,7 @@ class TilemapManager {
 	): TilemapData {
 		TextureGenerator.generateTexture(
 			scene,
-			0xff00ff,
+			0x555555,
 			tileWidth,
 			tileHeight,
 			"empty",
@@ -29,11 +29,11 @@ class TilemapManager {
 		);
 		TextureGenerator.generateTexture(
 			scene,
-			0x00ff00,
+			0x000000,
 			tileWidth,
 			tileHeight,
 			"filled",
-			{ color: 0x000000, thickness: 1 },
+			{ color: 0xaaaaaa, thickness: 1 },
 		);
 
 		const tilemap = scene.make.tilemap({
@@ -109,9 +109,11 @@ class TilemapManager {
 		}
 	}
 
-	public findRandomNonFilledTile(tilemapData: TilemapData): { x: number, y: number } | null {
+	public findRandomNonFilledTile(
+		tilemapData: TilemapData,
+	): { x: number; y: number } | null {
 		const { tilemap, emptyTileset } = tilemapData;
-		const nonFilledTiles: { x: number, y: number }[] = [];
+		const nonFilledTiles: { x: number; y: number }[] = [];
 
 		for (let y = 0; y < tilemap.height; y++) {
 			for (let x = 0; x < tilemap.width; x++) {

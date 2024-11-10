@@ -33,8 +33,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		});
 		this.setTexture("player");
 		this.setOrigin(0, 0);
+		this.body?.setSize(width, height);
 
-		this.scene.physics.add.collider(this, this.scene.physics.world.bounds, this.handleCollision, undefined, this);
+		this.scene.physics.add.collider(
+			this,
+			this.scene.physics.world.bounds,
+			this.handleCollision,
+			undefined,
+			this,
+		);
 	}
 
 	private stateMachine = {
