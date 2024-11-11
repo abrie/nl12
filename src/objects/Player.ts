@@ -10,6 +10,13 @@ enum PlayerState {
 	GLIDING,
 }
 
+interface State {
+	onEnter: () => void;
+	onExecute: () => void;
+	onExit: () => void;
+	onCollision: () => void;
+}
+
 class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentState: PlayerState;
 	private nextState: PlayerState;
@@ -43,7 +50,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		});
 	}
 
-	private stateMachine = {
+	private stateMachine: { [key in PlayerState]: State } = {
 		[PlayerState.IDLE]: {
 			onEnter: () => {},
 			onExecute: () => {},
