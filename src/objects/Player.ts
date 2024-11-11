@@ -11,9 +11,9 @@ enum PlayerState {
 }
 
 interface State {
-	onEnter: () => void;
-	onExecute: () => void;
-	onExit: () => void;
+	onEnter: (inputs: Inputs) => void;
+	onExecute: (inputs: Inputs) => void;
+	onExit: (inputs: Inputs) => void;
 	onCollision: () => void;
 }
 
@@ -52,41 +52,41 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 	private stateMachine: { [key in PlayerState]: State } = {
 		[PlayerState.IDLE]: {
-			onEnter: () => {},
-			onExecute: () => {},
-			onExit: () => {},
+			onEnter: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {},
+			onExit: (inputs: Inputs) => {},
 			onCollision: () => {
 				this.nextState = PlayerState.IDLE;
 			},
 		},
 		[PlayerState.RUNNING]: {
-			onEnter: () => {},
-			onExecute: () => {},
-			onExit: () => {},
+			onEnter: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {},
+			onExit: (inputs: Inputs) => {},
 			onCollision: () => {
 				this.nextState = PlayerState.IDLE;
 			},
 		},
 		[PlayerState.JUMPING]: {
-			onEnter: () => {},
-			onExecute: () => {},
-			onExit: () => {},
+			onEnter: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {},
+			onExit: (inputs: Inputs) => {},
 			onCollision: () => {
 				this.nextState = PlayerState.FALLING;
 			},
 		},
 		[PlayerState.FALLING]: {
-			onEnter: () => {},
-			onExecute: () => {},
-			onExit: () => {},
+			onEnter: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {},
+			onExit: (inputs: Inputs) => {},
 			onCollision: () => {
 				this.nextState = PlayerState.IDLE;
 			},
 		},
 		[PlayerState.GLIDING]: {
-			onEnter: () => {},
-			onExecute: () => {},
-			onExit: () => {},
+			onEnter: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {},
+			onExit: (inputs: Inputs) => {},
 			onCollision: () => {
 				this.nextState = PlayerState.FALLING;
 			},
@@ -99,12 +99,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 	public updateState(inputs: Inputs) {
 		if (this.nextState !== this.currentState) {
-			this.stateMachine[this.currentState].onExit();
+			this.stateMachine[this.currentState].onExit(inputs);
 			this.currentState = this.nextState;
-			this.stateMachine[this.currentState].onEnter();
+			this.stateMachine[this.currentState].onEnter(inputs);
 			this.stateText.setText(this.getStateText());
 		}
-		this.stateMachine[this.currentState].onExecute();
+		this.stateMachine[this.currentState].onExecute(inputs);
 		this.stateText.setPosition(this.x, this.y - 20);
 	}
 
