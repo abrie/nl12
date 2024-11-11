@@ -44,10 +44,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.setOrigin(0, 0);
 		this.body?.setSize(width, height);
 
-		this.stateText = this.scene.add.text(this.x, this.y - 20, this.getStateText(), {
-			fontSize: '16px',
-			color: '#ffffff',
-		});
+		this.stateText = this.scene.add.text(
+			this.x,
+			this.y - 20,
+			this.getStateText(),
+			{
+				fontSize: "16px",
+				color: "#ffffff",
+			},
+		);
 	}
 
 	private stateMachine: { [key in PlayerState]: State } = {
@@ -59,17 +64,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 			},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {
-				this.nextState = PlayerState.IDLE;
-			},
+			onCollision: () => {},
 		},
 		[PlayerState.RUNNING]: {
 			onEnter: (inputs: Inputs) => {},
 			onExecute: (inputs: Inputs) => {},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {
-				this.nextState = PlayerState.IDLE;
-			},
+			onCollision: () => {},
 		},
 		[PlayerState.JUMPING]: {
 			onEnter: (inputs: Inputs) => {
@@ -77,25 +78,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			},
 			onExecute: (inputs: Inputs) => {},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {
-				this.nextState = PlayerState.FALLING;
-			},
+			onCollision: () => {},
 		},
 		[PlayerState.FALLING]: {
 			onEnter: (inputs: Inputs) => {},
 			onExecute: (inputs: Inputs) => {},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {
-				this.nextState = PlayerState.IDLE;
-			},
+			onCollision: () => {},
 		},
 		[PlayerState.GLIDING]: {
 			onEnter: (inputs: Inputs) => {},
 			onExecute: (inputs: Inputs) => {},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {
-				this.nextState = PlayerState.FALLING;
-			},
+			onCollision: () => {},
 		},
 	};
 
@@ -132,7 +127,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	private isBlockedFromBelow(): boolean {
-		return this.body.blocked.down;
+		if (this.body) {
+			return this.body.blocked.down;
+		} else {
+			throw new Error("Cannot access this.body because it's null");
+		}
 	}
 }
 
