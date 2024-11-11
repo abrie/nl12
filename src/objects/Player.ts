@@ -57,7 +57,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 	private stateMachine: { [key in PlayerState]: State } = {
 		[PlayerState.IDLE]: {
-			onEnter: (inputs: Inputs) => {},
+			onEnter: (inputs: Inputs) => {
+				this.body.setVelocityY(0); // Set vertical velocity to zero
+			},
 			onExecute: (inputs: Inputs) => {
 				if (inputs.up && this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.JUMPING;
@@ -86,7 +88,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		},
 		[PlayerState.FALLING]: {
 			onEnter: (inputs: Inputs) => {},
-			onExecute: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {
+				if (this.isBlockedFromBelow()) {
+					this.nextState = PlayerState.IDLE;
+				}
+			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
