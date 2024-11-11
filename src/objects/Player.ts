@@ -12,6 +12,7 @@ enum PlayerState {
 class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentState: PlayerState;
 	private nextState: PlayerState;
+	private stateText: Phaser.GameObjects.Text;
 
 	constructor(
 		scene: Phaser.Scene,
@@ -34,6 +35,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.setTexture("player");
 		this.setOrigin(0, 0);
 		this.body?.setSize(width, height);
+
+		this.stateText = this.scene.add.text(this.x, this.y - 20, this.getStateText(), {
+			fontSize: '16px',
+			color: '#ffffff',
+		});
 	}
 
 	private stateMachine = {
@@ -93,8 +99,27 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateMachine[this.currentState].onExit();
 			this.currentState = this.nextState;
 			this.stateMachine[this.currentState].onEnter();
+			this.stateText.setText(this.getStateText());
 		}
 		this.stateMachine[this.currentState].onExecute();
+		this.stateText.setPosition(this.x, this.y - 20);
+	}
+
+	private getStateText(): string {
+		switch (this.currentState) {
+			case PlayerState.IDLE:
+				return "IDLE";
+			case PlayerState.RUNNING:
+				return "RUNNING";
+			case PlayerState.JUMPING:
+				return "JUMPING";
+			case PlayerState.FALLING:
+				return "FALLING";
+			case PlayerState.GLIDING:
+				return "GLIDING";
+			default:
+				return "";
+		}
 	}
 }
 
