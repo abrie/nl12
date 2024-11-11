@@ -63,18 +63,41 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			onExecute: (inputs: Inputs) => {
 				if (inputs.up && this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.JUMPING;
+					return;
+				}
+				if (inputs.left || inputs.right) {
+					this.nextState = PlayerState.RUNNING;
 				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
 		[PlayerState.RUNNING]: {
-			onEnter: (inputs: Inputs) => {},
-			onExecute: (inputs: Inputs) => {},
+			onEnter: (inputs: Inputs) => {
+				if (inputs.left && !inputs.right) {
+					this.body.setVelocityX(-150);
+				} else if (inputs.right && !inputs.left) {
+					this.body.setVelocityX(150);
+				} else {
+					this.body.setVelocityX(0);
+				}
+			},
+			onExecute: (inputs: Inputs) => {
+				if (inputs.left && !inputs.right) {
+					this.body.setVelocityX(-150);
+				} else if (inputs.right && !inputs.left) {
+					this.body.setVelocityX(150);
+				} else {
+					this.body.setVelocityX(0);
+				}
+				if (!inputs.left && !inputs.right) {
+					this.nextState = PlayerState.IDLE;
+				}
+			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
-		[PlayerState.JUMPING]: {
+			[PlayerState.JUMPING]: {
 			onEnter: (inputs: Inputs) => {
 				this.body.setVelocityY(-300); // Add vertical impulse
 			},
