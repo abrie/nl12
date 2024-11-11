@@ -45,10 +45,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private stateMachine = {
 		[PlayerState.IDLE]: {
 			onEnter: () => {},
-			onExecute: () => {},
+			onExecute: (inputs: { up: boolean; down: boolean; left: boolean; right: boolean }) => {
+				if (inputs.left || inputs.right) {
+					this.nextState = PlayerState.RUNNING;
+				} else if (inputs.up) {
+					this.nextState = PlayerState.JUMPING;
+				} else if (!this.body?.onFloor()) {
+					this.nextState = PlayerState.FALLING;
+				}
+			},
 			onExit: () => {},
 			onCollision: () => {
-				this.nextState = PlayerState.IDLE;
+				if (!this.body?.onFloor()) {
+					this.nextState = PlayerState.FALLING;
+				} else {
+					this.nextState = PlayerState.IDLE;
+				}
 			},
 		},
 		[PlayerState.RUNNING]: {
@@ -101,7 +113,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateMachine[this.currentState].onEnter();
 			this.stateText.setText(this.getStateText());
 		}
-		this.stateMachine[this.currentState].onExecute();
+		this.stateMachine[this.currentState].onExecute(inputs);
 		this.stateText.setPosition(this.x, this.y - 20);
 	}
 
