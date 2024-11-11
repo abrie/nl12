@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import TextureGenerator from "../utils/TextureGenerator";
+import { Inputs } from "../utils/InputManager";
 
 enum PlayerState {
 	IDLE,
@@ -89,12 +90,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.stateMachine[this.currentState].onCollision();
 	}
 
-	public updateState(inputs: {
-		up: boolean;
-		down: boolean;
-		left: boolean;
-		right: boolean;
-	}) {
+	public updateState(inputs: Inputs) {
 		if (this.nextState !== this.currentState) {
 			this.stateMachine[this.currentState].onExit();
 			this.currentState = this.nextState;
