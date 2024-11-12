@@ -130,9 +130,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 					this.nextState = PlayerState.FALLING;
 				}
 				if (inputs.left && !inputs.right) {
-					this.getBody().setVelocityX(-150);
+					this.getBody().setVelocityX(this.getBody().velocity.x - 10);
 				} else if (inputs.right && !inputs.left) {
-					this.getBody().setVelocityX(150);
+					this.getBody().setVelocityX(this.getBody().velocity.x + 10);
 				} else {
 					this.getBody().setVelocityX(0);
 				}
