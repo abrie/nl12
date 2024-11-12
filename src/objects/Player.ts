@@ -67,6 +67,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 				if (inputs.left || inputs.right) {
 					this.nextState = PlayerState.RUNNING;
+					return;
+				}
+				if (!this.isBlockedFromBelow()) {
+					this.nextState = PlayerState.FALLING;
 				}
 			},
 			onExit: (inputs: Inputs) => {},
