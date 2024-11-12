@@ -110,6 +110,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (!this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.GLIDING;
 				}
+				if (inputs.up && this.isBlockedFromBelow()) {
+					this.nextState = PlayerState.JUMPING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
