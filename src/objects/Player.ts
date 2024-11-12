@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import TextureGenerator from "../utils/TextureGenerator";
 import { Inputs } from "../utils/InputManager";
+import TilemapManager, { TilemapData } from "../utils/TilemapManager";
 
 enum PlayerState {
 	IDLE,
@@ -8,6 +9,7 @@ enum PlayerState {
 	JUMPING,
 	FALLING,
 	GLIDING,
+	GRAPPLING,
 }
 
 interface State {
@@ -21,6 +23,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentState: PlayerState;
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
+	private grapplingLine: Phaser.GameObjects.Line | null;
+	private activeMap: TilemapData | null;
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -36,6 +40,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		super(scene, x, y, "player");
 		this.currentState = PlayerState.IDLE;
 		this.nextState = PlayerState.IDLE;
+		this.grapplingLine = null;
+		this.activeMap = null;
 
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
@@ -86,6 +92,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (!this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.FALLING;
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
@@ -117,6 +126,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (inputs.up && this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.JUMPING;
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
@@ -143,6 +155,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				} else {
 					this.getBody().setVelocityX(0);
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
@@ -158,6 +173,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 				if (this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.IDLE;
+				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
 				}
 			},
 			onExit: (inputs: Inputs) => {},
@@ -178,8 +196,55 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.RUNNING;
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
+			onCollision: () => {},
+		},
+		[PlayerState.GRAPPLING]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocityX(0);
+				if (this.activeMap) {
+					const filledTile = TilemapManager.findFirstFilledTileAbove(
+						this.x / 32,
+						this.y / 32,
+						this.activeMap,
+					);
+					if (filledTile) {
+						const startX = this.x + this.width / 2;
+						const startY = this.y + this.height / 2;
+						const endX = filledTile.x * 32 + 16;
+						const endY = filledTile.y * 32 + 32;
+						this.grapplingLine = this.scene.add.line(
+							0,
+							0,
+							startX,
+							startY,
+							endX,
+							endY,
+							0xffffff,
+						);
+					}
+				}
+			},
+			onExecute: (inputs: Inputs) => {
+				if (inputs.up && !inputs.down) {
+					this.y -= 2;
+				} else if (inputs.down && !inputs.up) {
+					this.y += 2;
+				}
+				if (!inputs.grappling) {
+					this.nextState = PlayerState.FALLING;
+				}
+			},
+			onExit: (inputs: Inputs) => {
+				if (this.grapplingLine) {
+					this.grapplingLine.destroy();
+					this.grapplingLine = null;
+				}
+			},
 			onCollision: () => {},
 		},
 	};
@@ -211,6 +276,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "FALLING";
 			case PlayerState.GLIDING:
 				return "GLIDING";
+			case PlayerState.GRAPPLING:
+				return "GRAPPLING";
 			default:
 				return "";
 		}
@@ -222,6 +289,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		} else {
 			throw new Error("Cannot access this.body because it's null");
 		}
+	}
+
+	public setActiveMap(map: TilemapData) {
+		this.activeMap = map;
 	}
 }
 
