@@ -116,6 +116,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		[PlayerState.FALLING]: {
 			onEnter: (inputs: Inputs) => {},
 			onExecute: (inputs: Inputs) => {
+				if (inputs.left || inputs.right) {
+					this.nextState = PlayerState.GLIDING;
+					return;
+				}
 				if (this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.IDLE;
 				}
@@ -125,7 +129,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		},
 		[PlayerState.GLIDING]: {
 			onEnter: (inputs: Inputs) => {},
-			onExecute: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {
+				if (inputs.left && !inputs.right) {
+					this.body.setVelocityX(-100);
+				} else if (inputs.right && !inputs.left) {
+					this.body.setVelocityX(100);
+				} else if (!inputs.left && !inputs.right) {
+					this.nextState = PlayerState.FALLING;
+				} else if (inputs.left && inputs.right) {
+					this.nextState = PlayerState.FALLING;
+				}
+			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
