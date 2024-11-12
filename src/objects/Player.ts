@@ -22,6 +22,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
 
+	static readonly RUNNING_VELOCITY = 150;
+	static readonly GLIDING_VELOCITY = 100;
+	static readonly JUMPING_VELOCITY = 300;
+
 	constructor(
 		scene: Phaser.Scene,
 		x: number,
@@ -89,18 +93,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		[PlayerState.RUNNING]: {
 			onEnter: (inputs: Inputs) => {
 				if (inputs.left && !inputs.right) {
-					this.getBody().setVelocityX(-150);
+					this.getBody().setVelocityX(-Player.RUNNING_VELOCITY);
 				} else if (inputs.right && !inputs.left) {
-					this.getBody().setVelocityX(150);
+					this.getBody().setVelocityX(Player.RUNNING_VELOCITY);
 				} else {
 					this.getBody().setVelocityX(0);
 				}
 			},
 			onExecute: (inputs: Inputs) => {
 				if (inputs.left && !inputs.right) {
-					this.getBody().setVelocityX(-150);
+					this.getBody().setVelocityX(-Player.RUNNING_VELOCITY);
 				} else if (inputs.right && !inputs.left) {
-					this.getBody().setVelocityX(150);
+					this.getBody().setVelocityX(Player.RUNNING_VELOCITY);
 				} else {
 					this.getBody().setVelocityX(0);
 				}
@@ -119,11 +123,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		},
 		[PlayerState.JUMPING]: {
 			onEnter: (inputs: Inputs) => {
-				this.getBody().setVelocityY(-300); // Add vertical impulse
+				this.getBody().setVelocityY(-Player.JUMPING_VELOCITY); // Add vertical impulse
 				if (inputs.left && !inputs.right) {
-					this.getBody().setVelocityX(-150);
+					this.getBody().setVelocityX(-Player.RUNNING_VELOCITY);
 				} else if (inputs.right && !inputs.left) {
-					this.getBody().setVelocityX(150);
+					this.getBody().setVelocityX(Player.RUNNING_VELOCITY);
 				} else {
 					this.getBody().setVelocityX(0);
 				}
@@ -133,9 +137,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 					this.nextState = PlayerState.FALLING;
 				}
 				if (inputs.left && !inputs.right) {
-					this.getBody().setVelocityX(-150);
+					this.getBody().setVelocityX(-Player.RUNNING_VELOCITY);
 				} else if (inputs.right && !inputs.left) {
-					this.getBody().setVelocityX(150);
+					this.getBody().setVelocityX(Player.RUNNING_VELOCITY);
 				} else {
 					this.getBody().setVelocityX(0);
 				}
@@ -163,9 +167,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			onEnter: (inputs: Inputs) => {},
 			onExecute: (inputs: Inputs) => {
 				if (inputs.left && !inputs.right) {
-					this.getBody().setVelocityX(-100);
+					this.getBody().setVelocityX(-Player.GLIDING_VELOCITY);
 				} else if (inputs.right && !inputs.left) {
-					this.getBody().setVelocityX(100);
+					this.getBody().setVelocityX(Player.GLIDING_VELOCITY);
 				} else if (!inputs.left && !inputs.right) {
 					this.nextState = PlayerState.FALLING;
 				} else if (inputs.left && inputs.right) {
