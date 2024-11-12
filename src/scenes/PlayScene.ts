@@ -60,6 +60,7 @@ class PlayScene extends Phaser.Scene {
 				undefined,
 				this,
 			);
+			this.player.setCurrentMap(tilemapManager); // Set the current map for the player
 		}
 	}
 
@@ -68,6 +69,7 @@ class PlayScene extends Phaser.Scene {
 		const inputs = this.inputManager.getInputs();
 		if (this.player) {
 			this.player.updateState(inputs);
+			this.player.setCurrentMap(tilemapManager); // Update the current map for the player
 		}
 	}
 

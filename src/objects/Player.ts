@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import TextureGenerator from "../utils/TextureGenerator";
 import { Inputs } from "../utils/InputManager";
+import TilemapManager from "../utils/TilemapManager"; // Import TilemapManager
 
 enum PlayerState {
 	IDLE,
@@ -8,6 +9,7 @@ enum PlayerState {
 	JUMPING,
 	FALLING,
 	GLIDING,
+	GRAPPLING, // Add GRAPPLING state
 }
 
 interface State {
@@ -21,6 +23,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentState: PlayerState;
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
+	private currentMap: TilemapManager; // Add currentMap property
+	private grapplingAnchor: { x: number; y: number } | null; // Add grapplingAnchor property
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -36,6 +40,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		super(scene, x, y, "player");
 		this.currentState = PlayerState.IDLE;
 		this.nextState = PlayerState.IDLE;
+		this.grapplingAnchor = null; // Initialize grapplingAnchor
 
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
@@ -67,6 +72,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				"Type guard: body is not an instance of Phaser.Physics.Arcade.Body",
 			);
 		}
+	}
+
+	public setCurrentMap(map: TilemapManager) {
+		this.currentMap = map;
+	}
+
+	public computeGrapplingHookAnchor(): { x: number; y: number } | null {
+		if (!this.currentMap) {
+			throw new Error("Current map is not set");
+		}
+		const playerX = Math.floor(this.x / this.width);
+		const playerY = Math.floor(this.y / this.height);
+		return this.currentMap.getFirstFilledTileAbove(playerX, playerY, this.currentMap);
 	}
 
 	private stateMachine: { [key in PlayerState]: State } = {
@@ -182,6 +200,40 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
+		[PlayerState.GRAPPLING]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocityX(0); // Set horizontal velocity to 0
+				this.grapplingAnchor = this.computeGrapplingHookAnchor(); // Compute grappling hook anchor
+			},
+			onExecute: (inputs: Inputs) => {
+				if (this.grapplingAnchor) {
+					const playerCenterX = this.x + this.width / 2;
+					const playerCenterY = this.y + this.height / 2;
+					const anchorBottomY = this.grapplingAnchor.y * this.height + this.height;
+					this.scene.add.line(
+						playerCenterX,
+						playerCenterY,
+						0,
+						0,
+						this.grapplingAnchor.x * this.width - playerCenterX,
+						anchorBottomY - playerCenterY,
+						0xffffff,
+					); // Draw grappling hook rope
+				}
+				if (inputs.up && !inputs.down) {
+					this.y -= 2; // Raise player
+				} else if (inputs.down && !inputs.up) {
+					this.y += 2; // Lower player
+				}
+				if (!inputs.grappling) {
+					this.nextState = PlayerState.FALLING; // Transition to FALLING state
+				}
+			},
+			onExit: (inputs: Inputs) => {
+				this.grapplingAnchor = null; // Remove grappling line
+			},
+			onCollision: () => {},
+		},
 	};
 
 	handleCollision() {
@@ -211,6 +263,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "FALLING";
 			case PlayerState.GLIDING:
 				return "GLIDING";
+			case PlayerState.GRAPPLING:
+				return "GRAPPLING";
 			default:
 				return "";
 		}
