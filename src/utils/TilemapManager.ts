@@ -1,15 +1,13 @@
 import Phaser from "phaser";
 import TextureGenerator from "./TextureGenerator";
 
-type TilemapData = {
+class TilemapManager {
 	scene: Phaser.Scene;
 	tilemap: Phaser.Tilemaps.Tilemap;
 	emptyTileset: Phaser.Tilemaps.Tileset;
 	filledTileset: Phaser.Tilemaps.Tileset;
 	layer: Phaser.Tilemaps.TilemapLayer;
-};
 
-class TilemapManager {
 	constructor() {}
 
 	createTilemap(
@@ -18,7 +16,7 @@ class TilemapManager {
 		height: number,
 		tileWidth: number,
 		tileHeight: number,
-	): TilemapData {
+	) {
 		TextureGenerator.generateTexture(
 			scene,
 			0x555555,
@@ -36,13 +34,13 @@ class TilemapManager {
 			{ color: 0xaaaaaa, thickness: 1 },
 		);
 
-		const tilemap = scene.make.tilemap({
+		this.tilemap = scene.make.tilemap({
 			width,
 			height,
 			tileWidth,
 			tileHeight,
 		});
-		const filledTileset = tilemap.addTilesetImage(
+		this.filledTileset = this.tilemap.addTilesetImage(
 			"filled",
 			undefined,
 			tileWidth,
@@ -51,11 +49,11 @@ class TilemapManager {
 			0,
 			1,
 		);
-		if (!filledTileset) {
+		if (!this.filledTileset) {
 			throw new Error("Failed to create 'filled' TilesetImage");
 		}
 
-		const emptyTileset = tilemap.addTilesetImage(
+		this.emptyTileset = this.tilemap.addTilesetImage(
 			"empty",
 			undefined,
 			tileWidth,
@@ -64,20 +62,20 @@ class TilemapManager {
 			0,
 			2,
 		);
-		if (!emptyTileset) {
+		if (!this.emptyTileset) {
 			throw new Error("Failed to create 'empty' TilesetImage");
 		}
-		const layer = tilemap.createBlankLayer("layer", [
-			emptyTileset,
-			filledTileset,
+		this.layer = this.tilemap.createBlankLayer("layer", [
+			this.emptyTileset,
+			this.filledTileset,
 		]);
 
-		if (!layer) {
+		if (!this.layer) {
 			throw new Error("Failed to create layer");
 		}
-		this.setupCollision({ layer, filledTileset });
+		this.setupCollision({ layer: this.layer, filledTileset: this.filledTileset });
 
-		return { scene, tilemap, emptyTileset, filledTileset, layer };
+		this.scene = scene;
 	}
 
 	private setupCollision({
@@ -94,31 +92,26 @@ class TilemapManager {
 		x: number,
 		y: number,
 		filled: boolean,
-		tilemapData: TilemapData,
 	) {
-		const { tilemap, filledTileset, emptyTileset, layer } = tilemapData;
-		const tileIndex = filled ? filledTileset.firstgid : emptyTileset.firstgid;
-		tilemap.putTileAt(tileIndex, x, y, true, layer);
+		const tileIndex = filled ? this.filledTileset.firstgid : this.emptyTileset.firstgid;
+		this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
 	}
 
-	public populateTilemap(map: boolean[][], tilemapData: TilemapData) {
+	public populateTilemap(map: boolean[][]) {
 		for (let y = 0; y < map.length; y++) {
 			for (let x = 0; x < map[y].length; x++) {
-				this.setTile(x, y, map[y][x], tilemapData);
+				this.setTile(x, y, map[y][x]);
 			}
 		}
 	}
 
-	public findRandomNonFilledTile(
-		tilemapData: TilemapData,
-	): { x: number; y: number } | null {
-		const { tilemap, emptyTileset } = tilemapData;
+	public findRandomNonFilledTile(): { x: number; y: number } | null {
 		const nonFilledTiles: { x: number; y: number }[] = [];
 
-		for (let y = 0; y < tilemap.height; y++) {
-			for (let x = 0; x < tilemap.width; x++) {
-				const tile = tilemap.getTileAt(x, y);
-				if (tile && tile.index === emptyTileset.firstgid) {
+		for (let y = 0; y < this.tilemap.height; y++) {
+			for (let x = 0; x < this.tilemap.width; x++) {
+				const tile = this.tilemap.getTileAt(x, y);
+				if (tile && tile.index === this.emptyTileset.firstgid) {
 					nonFilledTiles.push({ x, y });
 				}
 			}
