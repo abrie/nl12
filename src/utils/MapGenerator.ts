@@ -54,6 +54,24 @@ class MapGenerator {
       return filledNeighbors >= 5;
     }
   }
+
+  public static addBorder(mapData: boolean[][]): boolean[][] {
+    const width = mapData[0].length;
+    const height = mapData.length;
+    const newMapData = mapData.map(row => row.slice());
+
+    for (let x = 0; x < width; x++) {
+      newMapData[0][x] = true;
+      newMapData[height - 1][x] = true;
+    }
+
+    for (let y = 0; y < height; y++) {
+      newMapData[y][0] = true;
+      newMapData[y][width - 1] = true;
+    }
+
+    return newMapData;
+  }
 }
 
 export default MapGenerator;
