@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import TextureGenerator from "../utils/TextureGenerator";
 import { Inputs } from "../utils/InputManager";
+import TilemapManager from "../utils/TilemapManager";
 
 enum PlayerState {
 	IDLE,
@@ -8,6 +9,7 @@ enum PlayerState {
 	JUMPING,
 	FALLING,
 	GLIDING,
+	GRAPPLING,
 }
 
 interface State {
@@ -21,6 +23,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentState: PlayerState;
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
+	private currentMap: TilemapManager;
+	private grapplingLine: Phaser.GameObjects.Line;
+	private anchorTile: { x: number; y: number } | null;
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -182,6 +187,39 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
+		[PlayerState.GRAPPLING]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocityX(0);
+				this.anchorTile = this.computeGrapplingHookAnchorTile();
+				if (this.anchorTile) {
+					this.grapplingLine = this.scene.add.line(
+						0,
+						0,
+						this.x + this.width / 2,
+						this.y + this.height / 2,
+						this.anchorTile.x * this.currentMap.tilemap.tileWidth + this.currentMap.tilemap.tileWidth / 2,
+						this.anchorTile.y * this.currentMap.tilemap.tileHeight + this.currentMap.tilemap.tileHeight,
+						0xffffff,
+					).setOrigin(0, 0);
+				}
+			},
+			onExecute: (inputs: Inputs) => {
+				if (inputs.up && !inputs.down) {
+					this.y -= 2;
+				} else if (inputs.down && !inputs.up) {
+					this.y += 2;
+				}
+				if (!inputs.up && !inputs.down) {
+					this.nextState = PlayerState.FALLING;
+				}
+			},
+			onExit: (inputs: Inputs) => {
+				if (this.grapplingLine) {
+					this.grapplingLine.destroy();
+				}
+			},
+			onCollision: () => {},
+		},
 	};
 
 	handleCollision() {
@@ -211,6 +249,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "FALLING";
 			case PlayerState.GLIDING:
 				return "GLIDING";
+			case PlayerState.GRAPPLING:
+				return "GRAPPLING";
 			default:
 				return "";
 		}
@@ -222,6 +262,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		} else {
 			throw new Error("Cannot access this.body because it's null");
 		}
+	}
+
+	public setCurrentMap(map: TilemapManager) {
+		this.currentMap = map;
+	}
+
+	private computeGrapplingHookAnchorTile(): { x: number; y: number } | null {
+		if (!this.currentMap) {
+			return null;
+		}
+		const playerTileX = Math.floor(this.x / this.currentMap.tilemap.tileWidth);
+		const playerTileY = Math.floor(this.y / this.currentMap.tilemap.tileHeight);
+		return this.currentMap.findFirstFilledTileAbove(playerTileX, playerTileY);
 	}
 }
 
