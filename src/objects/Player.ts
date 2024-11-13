@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import TextureGenerator from "../utils/TextureGenerator";
 import { Inputs } from "../utils/InputManager";
+import TilemapManager from "../utils/TilemapManager";
 
 enum PlayerState {
 	IDLE,
@@ -8,6 +9,7 @@ enum PlayerState {
 	JUMPING,
 	FALLING,
 	GLIDING,
+	GRAPPLING,
 }
 
 interface State {
@@ -21,6 +23,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentState: PlayerState;
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
+	private currentMap: TilemapManager;
+	private grapplingLine: Phaser.GameObjects.Line | null;
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -36,6 +40,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		super(scene, x, y, "player");
 		this.currentState = PlayerState.IDLE;
 		this.nextState = PlayerState.IDLE;
+		this.grapplingLine = null;
 
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
@@ -86,6 +91,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (!this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.FALLING;
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
@@ -117,6 +125,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (inputs.up && this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.JUMPING;
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
@@ -143,6 +154,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				} else {
 					this.getBody().setVelocityX(0);
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
@@ -158,6 +172,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 				if (this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.IDLE;
+				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
 				}
 			},
 			onExit: (inputs: Inputs) => {},
@@ -178,8 +195,47 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (this.isBlockedFromBelow()) {
 					this.nextState = PlayerState.RUNNING;
 				}
+				if (inputs.grappling) {
+					this.nextState = PlayerState.GRAPPLING;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
+			onCollision: () => {},
+		},
+		[PlayerState.GRAPPLING]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocityX(0);
+				const anchorTile = this.getGrapplingHookAnchorTile();
+				if (anchorTile) {
+					this.grapplingLine = this.scene.add.line(
+						0,
+						0,
+						this.x + this.width / 2,
+						this.y + this.height / 2,
+						anchorTile.x * this.currentMap.tilemap.tileWidth + this.currentMap.tilemap.tileWidth / 2,
+						anchorTile.y * this.currentMap.tilemap.tileHeight + this.currentMap.tilemap.tileHeight,
+						0xffffff,
+					);
+				}
+			},
+			onExecute: (inputs: Inputs) => {
+				if (inputs.up && !inputs.down) {
+					this.getBody().setVelocityY(-Player.RUNNING_VELOCITY);
+				} else if (inputs.down && !inputs.up) {
+					this.getBody().setVelocityY(Player.RUNNING_VELOCITY);
+				} else {
+					this.getBody().setVelocityY(0);
+				}
+				if (!inputs.grappling) {
+					this.nextState = PlayerState.FALLING;
+				}
+			},
+			onExit: (inputs: Inputs) => {
+				if (this.grapplingLine) {
+					this.grapplingLine.destroy();
+					this.grapplingLine = null;
+				}
+			},
 			onCollision: () => {},
 		},
 	};
@@ -211,6 +267,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "FALLING";
 			case PlayerState.GLIDING:
 				return "GLIDING";
+			case PlayerState.GRAPPLING:
+				return "GRAPPLING";
 			default:
 				return "";
 		}
@@ -222,6 +280,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		} else {
 			throw new Error("Cannot access this.body because it's null");
 		}
+	}
+
+	public setCurrentMap(map: TilemapManager) {
+		this.currentMap = map;
+	}
+
+	private getGrapplingHookAnchorTile(): { x: number; y: number } | null {
+		if (!this.currentMap) {
+			throw new Error("Current map is not set");
+		}
+		const playerTileX = Math.floor(this.x / this.currentMap.tilemap.tileWidth);
+		const playerTileY = Math.floor(this.y / this.currentMap.tilemap.tileHeight);
+		return this.currentMap.getFirstFilledTileAbove(playerTileX, playerTileY);
 	}
 }
 

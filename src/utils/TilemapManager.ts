@@ -124,6 +124,16 @@ class TilemapManager {
 		const randomIndex = Math.floor(Math.random() * nonFilledTiles.length);
 		return nonFilledTiles[randomIndex];
 	}
+
+	public getFirstFilledTileAbove(x: number, y: number): { x: number; y: number } | null {
+		for (let ty = y - 1; ty >= 0; ty--) {
+			const tile = this.tilemap.getTileAt(x, ty);
+			if (tile && tile.index === this.filledTileset.firstgid) {
+				return { x, y: ty };
+			}
+		}
+		return null;
+	}
 }
 
 export default TilemapManager;
