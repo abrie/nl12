@@ -292,7 +292,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		}
 		const playerTileX = Math.floor(this.x / this.currentMap.tilemap.tileWidth);
 		const playerTileY = Math.floor(this.y / this.currentMap.tilemap.tileHeight);
-		return this.currentMap.getFirstFilledTileAbove(playerTileX, playerTileY);
+		const anchorTile = this.currentMap.getFirstFilledTileAbove(playerTileX, playerTileY);
+		if (anchorTile) {
+			return { x: anchorTile.x, y: anchorTile.y + 1 };
+		}
+		return null;
 	}
 }
 
