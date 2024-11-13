@@ -26,14 +26,14 @@ class PlayScene extends Phaser.Scene {
 	create() {
 		const map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
 		const tilemapManager = new TilemapManager();
-		const tilemapData = tilemapManager.createTilemap(
+		tilemapManager.createTilemap(
 			this,
 			Config.MapWidth,
 			Config.MapHeight,
 			Config.TileWidth,
 			Config.TileHeight,
 		);
-		tilemapManager.populateTilemap(map, tilemapData);
+		tilemapManager.populateTilemap(map);
 		this.physics.world.setBounds(
 			0,
 			0,
@@ -43,7 +43,7 @@ class PlayScene extends Phaser.Scene {
 
 		this.inputManager = new InputManager(this);
 
-		const playerStart = tilemapManager.findRandomNonFilledTile(tilemapData);
+		const playerStart = tilemapManager.findRandomNonFilledTile();
 		if (playerStart) {
 			this.player = new Player(
 				this,
@@ -55,7 +55,7 @@ class PlayScene extends Phaser.Scene {
 			this.physics.add.existing(this.player);
 			this.physics.add.collider(
 				this.player,
-				tilemapData.layer,
+				tilemapManager.layer,
 				this.handlePlayerCollision,
 				undefined,
 				this,
