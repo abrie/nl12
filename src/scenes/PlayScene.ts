@@ -24,7 +24,25 @@ class PlayScene extends Phaser.Scene {
 	}
 
 	create() {
-		let map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
+		let mapType = "cellular"; // Change this to "filledBoxes", "voronoi", or "perlinNoise" to use different map generation types
+		let map;
+
+		switch (mapType) {
+			case "filledBoxes":
+				map = MapGenerator.generateFilledBoxesMap(Config.MapWidth, Config.MapHeight, 10);
+				break;
+			case "voronoi":
+				map = MapGenerator.generateVoronoiMap(Config.MapWidth, Config.MapHeight, 10);
+				break;
+			case "perlinNoise":
+				map = MapGenerator.generatePerlinNoiseMap(Config.MapWidth, Config.MapHeight, 0.5);
+				break;
+			case "cellular":
+			default:
+				map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
+				break;
+		}
+
 		map = MapGenerator.addBorder(map);
 		const tilemapManager = new TilemapManager();
 		tilemapManager.createTilemap(
