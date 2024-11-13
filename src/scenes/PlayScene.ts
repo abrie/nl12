@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import TilemapManager from "../utils/TilemapManager";
+import * as TilemapManager from "../utils/TilemapManager";
 import MapGenerator from "../utils/MapGenerator";
 import InputManager from "../utils/InputManager";
 import Player from "../objects/Player";
@@ -25,15 +25,14 @@ class PlayScene extends Phaser.Scene {
 
 	create() {
 		const map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
-		const tilemapManager = new TilemapManager();
-		const tilemapData = tilemapManager.createTilemap(
+		const tilemapData = TilemapManager.createTilemap(
 			this,
 			Config.MapWidth,
 			Config.MapHeight,
 			Config.TileWidth,
 			Config.TileHeight,
 		);
-		tilemapManager.populateTilemap(map, tilemapData);
+		TilemapManager.populateTilemap(map, tilemapData);
 		this.physics.world.setBounds(
 			0,
 			0,
@@ -43,7 +42,7 @@ class PlayScene extends Phaser.Scene {
 
 		this.inputManager = new InputManager(this);
 
-		const playerStart = tilemapManager.findRandomNonFilledTile(tilemapData);
+		const playerStart = TilemapManager.findRandomNonFilledTile(tilemapData);
 		if (playerStart) {
 			this.player = new Player(
 				this,
