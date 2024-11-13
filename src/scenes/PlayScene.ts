@@ -25,7 +25,7 @@ class PlayScene extends Phaser.Scene {
 
 	create() {
 		const map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
-		const tilemapManager = new TilemapManager();
+		const tilemapManager = TilemapManager.getInstance();
 		const tilemapData = tilemapManager.createTilemap(
 			this,
 			Config.MapWidth,
@@ -60,6 +60,7 @@ class PlayScene extends Phaser.Scene {
 				undefined,
 				this,
 			);
+			this.player.setTilemapData(tilemapData);
 		}
 	}
 
@@ -68,6 +69,7 @@ class PlayScene extends Phaser.Scene {
 		const inputs = this.inputManager.getInputs();
 		if (this.player) {
 			this.player.updateState(inputs);
+			this.player.setTilemapData(tilemapData);
 		}
 	}
 

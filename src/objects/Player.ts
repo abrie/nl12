@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import TextureGenerator from "../utils/TextureGenerator";
 import { Inputs } from "../utils/InputManager";
+import { TilemapData } from "../utils/TilemapManager";
 
 enum PlayerState {
 	IDLE,
@@ -21,6 +22,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentState: PlayerState;
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
+	private _tilemapData: TilemapData | null = null;
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -57,6 +59,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				color: "#ffffff",
 			},
 		);
+	}
+
+	public setTilemapData(tilemapData: TilemapData) {
+		if (tilemapData && tilemapData.tilemap && tilemapData.layer) {
+			this._tilemapData = tilemapData;
+		} else {
+			throw new Error("Invalid TilemapData instance provided");
+		}
 	}
 
 	private getBody(): Phaser.Physics.Arcade.Body {

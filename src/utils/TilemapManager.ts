@@ -10,7 +10,16 @@ type TilemapData = {
 };
 
 class TilemapManager {
-	constructor() {}
+	private static instance: TilemapManager;
+
+	private constructor() {}
+
+	public static getInstance(): TilemapManager {
+		if (!TilemapManager.instance) {
+			TilemapManager.instance = new TilemapManager();
+		}
+		return TilemapManager.instance;
+	}
 
 	createTilemap(
 		scene: Phaser.Scene,
