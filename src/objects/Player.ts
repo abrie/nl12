@@ -144,16 +144,26 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			onExecute: (inputs: Inputs) => {
 				if (this.getBody().velocity.y > 0) {
 					this.nextState = PlayerState.FALLING;
+					return;
 				}
-				if (inputs.left && !inputs.right) {
-					this.getBody().setVelocityX(-Player.RUNNING_VELOCITY);
-				} else if (inputs.right && !inputs.left) {
-					this.getBody().setVelocityX(Player.RUNNING_VELOCITY);
-				} else {
-					this.getBody().setVelocityX(0);
+				if (this.getBody().velocity.y === 0 && this.isBlockedFromBelow()) {
+					console.log("!");
+					this.nextState = PlayerState.IDLE;
+					return;
 				}
 				if (inputs.grappling) {
 					this.nextState = PlayerState.GRAPPLING;
+					return;
+				}
+				if (inputs.left && !inputs.right) {
+					this.getBody().setVelocityX(-Player.RUNNING_VELOCITY);
+					return;
+				} else if (inputs.right && !inputs.left) {
+					this.getBody().setVelocityX(Player.RUNNING_VELOCITY);
+					return;
+				} else {
+					this.getBody().setVelocityX(0);
+					return;
 				}
 			},
 			onExit: (inputs: Inputs) => {},
