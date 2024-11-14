@@ -19,7 +19,7 @@ class TilemapManager {
 	) {
 		TextureGenerator.generateTexture(
 			scene,
-			0x555555,
+			0x000000,
 			tileWidth,
 			tileHeight,
 			"empty",
@@ -27,11 +27,11 @@ class TilemapManager {
 		);
 		TextureGenerator.generateTexture(
 			scene,
-			0x000000,
+			0xf0aa00,
 			tileWidth,
 			tileHeight,
 			"filled",
-			{ color: 0xaaaaaa, thickness: 1 },
+			{ color: 0xf0ee00, thickness: 1 },
 		);
 
 		this.tilemap = scene.make.tilemap({
@@ -73,7 +73,10 @@ class TilemapManager {
 		if (!this.layer) {
 			throw new Error("Failed to create layer");
 		}
-		this.setupCollision({ layer: this.layer, filledTileset: this.filledTileset });
+		this.setupCollision({
+			layer: this.layer,
+			filledTileset: this.filledTileset,
+		});
 
 		this.scene = scene;
 	}
@@ -88,12 +91,10 @@ class TilemapManager {
 		layer.setCollision(filledTileset.firstgid);
 	}
 
-	public setTile(
-		x: number,
-		y: number,
-		filled: boolean,
-	) {
-		const tileIndex = filled ? this.filledTileset.firstgid : this.emptyTileset.firstgid;
+	public setTile(x: number, y: number, filled: boolean) {
+		const tileIndex = filled
+			? this.filledTileset.firstgid
+			: this.emptyTileset.firstgid;
 		this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
 	}
 
@@ -125,7 +126,10 @@ class TilemapManager {
 		return nonFilledTiles[randomIndex];
 	}
 
-	public getFirstFilledTileAbove(x: number, y: number): { x: number; y: number } | null {
+	public getFirstFilledTileAbove(
+		x: number,
+		y: number,
+	): { x: number; y: number } | null {
 		for (let ty = y - 1; ty >= 0; ty--) {
 			const tile = this.tilemap.getTileAt(x, ty);
 			if (tile && tile.index === this.filledTileset.firstgid) {
