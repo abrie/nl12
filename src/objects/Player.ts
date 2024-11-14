@@ -24,7 +24,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
 	private currentMap: TilemapManager;
-	private grapplingLine: Phaser.GameObjects.Line | null; // P99ee
+	private grapplingLine: Phaser.GameObjects.Line;
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -40,7 +40,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		super(scene, x, y, "player");
 		this.currentState = PlayerState.IDLE;
 		this.nextState = PlayerState.IDLE;
-		this.grapplingLine = null; // P99ee
 
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
@@ -232,7 +231,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 						0,
 						0,
 						0,
-						anchorTile.pixelY + anchorTile.height,
+						anchorTile.pixelY + this.currentMap.tilemap.tileHeight,
 						0xffffff,
 					);
 					this.grapplingLine.setOrigin(0.5, 0);
