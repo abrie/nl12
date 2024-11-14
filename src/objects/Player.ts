@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import TextureGenerator from "../utils/TextureGenerator";
 import { Inputs } from "../utils/InputManager";
 import TilemapManager from "../utils/TilemapManager";
-import { Tweens } from "phaser"; // Import Phaser.Tweens
 
 enum PlayerState {
 	IDLE,
