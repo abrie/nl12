@@ -234,13 +234,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 						this.anchorTile.pixelY - this.y + this.height,
 						0xffffff,
 					);
+					this.grapplingLine.setScale(1, 0);
 					this.grapplingLine.setLineWidth(5);
 					this.grapplingLine.setOrigin(0.5, 0);
 					// Add a tween to scale the grappling line from 0.5% to 100%
 					this.scene.tweens.add({
 						targets: this.grapplingLine,
-						scaleY: { from: 0.005, to: 1 },
-						duration: 200,
+						scaleY: { from: 0.0, to: 1 },
+						duration: 25,
 					});
 				}
 			},
@@ -273,8 +274,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (this.grapplingLine) {
 					this.scene.tweens.add({
 						targets: this.grapplingLine,
-						scaleY: { from: 1, to: 0.005 },
-						duration: 200,
+						scaleY: { from: 1, to: 0 },
+						duration: 25,
 						onComplete: () => {
 							this.grapplingLine.destroy();
 							this.grapplingLine = null;
