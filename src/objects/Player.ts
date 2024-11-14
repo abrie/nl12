@@ -155,6 +155,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (inputs.grappling) {
 					this.nextState = PlayerState.GRAPPLING;
 				}
+				if (this.isBlockedFromBelow()) {
+					this.nextState = PlayerState.IDLE;
+				}
 			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
