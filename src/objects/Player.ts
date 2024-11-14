@@ -24,7 +24,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
 	private currentMap: TilemapManager;
-
+	private grapplingLine: Phaser.GameObjects.Line;
+	private anchorTile: Phaser.Tilemaps.Tile | null = null;
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
 	static readonly JUMPING_VELOCITY = 300;
@@ -213,16 +214,28 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		[PlayerState.GRAPPLING]: {
 			onEnter: (inputs: Inputs) => {
 				this.getBody().setVelocityX(0);
-				const anchorTile = this.getGrapplingHookAnchorTile();
-				if (anchorTile) {
+				this.anchorTile = this.getGrapplingHookAnchorTile();
+				if (this.anchorTile) {
 					// Tint the anchor tile
 					this.currentMap.layer.setTint(
 						0xff00ff,
-						anchorTile.x,
-						anchorTile.y,
+						this.anchorTile.x,
+						this.anchorTile.y,
 						1,
 						1,
 					);
+					// Initialize and draw the vertical line
+					this.grapplingLine = this.scene.add.line(
+						this.x,
+						this.y,
+						0,
+						0,
+						0,
+						this.anchorTile.pixelY - this.y + this.height,
+						0xffffff,
+					);
+					this.grapplingLine.setLineWidth(5);
+					this.grapplingLine.setOrigin(0.5, 0);
 				}
 			},
 			onExecute: (inputs: Inputs) => {
@@ -236,10 +249,25 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (!inputs.grappling) {
 					this.nextState = PlayerState.FALLING;
 				}
+				// Update the position of the vertical line
+				if (this.grapplingLine && this.anchorTile) {
+					this.grapplingLine.setPosition(this.x, this.y);
+					this.grapplingLine.setTo(
+						0,
+						0,
+						0,
+						this.anchorTile.pixelY - this.y + this.height,
+					);
+				}
 			},
 			onExit: (inputs: Inputs) => {
 				// Clear existing tint
 				this.currentMap.layer.setTint(0xffffff, 0, 0);
+				// Remove the vertical line from the scene
+				if (this.grapplingLine) {
+					this.grapplingLine.destroy();
+					this.grapplingLine = null;
+				}
 			},
 			onCollision: () => {},
 		},
