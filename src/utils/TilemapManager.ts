@@ -127,13 +127,14 @@ class TilemapManager {
 	}
 
 	public getFirstFilledTileAbove(
-		x: number,
-		y: number,
-	): { x: number; y: number } | null {
-		for (let ty = y - 1; ty >= 0; ty--) {
-			const tile = this.tilemap.getTileAt(x, ty);
+		worldX: number,
+		worldY: number,
+	): Phaser.Tilemaps.Tile | null {
+		const startTile = this.layer.getTileAtWorldXY(worldX, worldY);
+		for (let ty = startTile.y - 1; ty >= 0; ty--) {
+			const tile = this.tilemap.getTileAt(startTile.x, ty);
 			if (tile && tile.index === this.filledTileset.firstgid) {
-				return { x, y: ty };
+				return tile;
 			}
 		}
 		return null;

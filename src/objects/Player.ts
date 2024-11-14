@@ -24,7 +24,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
 	private currentMap: TilemapManager;
-	private grapplingLine: Phaser.GameObjects.Line | null;
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -40,17 +39,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		super(scene, x, y, "player");
 		this.currentState = PlayerState.IDLE;
 		this.nextState = PlayerState.IDLE;
-		this.grapplingLine = null;
 
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
 
 		TextureGenerator.generateTexture(scene, 0x0000ff, width, height, "player", {
 			color: 0xff0000,
-			thickness: 2,
+			thickness: 5,
 		});
 		this.setTexture("player");
-		this.setOrigin(0, 0);
+		this.setOrigin(0.5, 0.5);
 		this.body?.setSize(width, height);
 
 		this.stateText = this.scene.add.text(
@@ -207,14 +205,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				this.getBody().setVelocityX(0);
 				const anchorTile = this.getGrapplingHookAnchorTile();
 				if (anchorTile) {
-					this.grapplingLine = this.scene.add.line(
-						0,
-						0,
-						this.x + this.width / 2,
-						this.y + this.height / 2,
-						anchorTile.x * this.currentMap.tilemap.tileWidth + this.currentMap.tilemap.tileWidth / 2,
-						anchorTile.y * this.currentMap.tilemap.tileHeight + this.currentMap.tilemap.tileHeight,
-						0xffffff,
+					// Tint the anchor tile
+					this.currentMap.layer.setTint(
+						0xff00ff,
+						anchorTile.x,
+						anchorTile.y,
+						1,
+						1,
 					);
 				}
 			},
@@ -231,10 +228,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 			},
 			onExit: (inputs: Inputs) => {
-				if (this.grapplingLine) {
-					this.grapplingLine.destroy();
-					this.grapplingLine = null;
-				}
+				// Clear existing tint
+				this.currentMap.layer.setTint(0xffffff, 0, 0);
 			},
 			onCollision: () => {},
 		},
@@ -252,7 +247,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateText.setText(this.getStateText());
 		}
 		this.stateMachine[this.currentState].onExecute(inputs);
-		this.stateText.setPosition(this.x, this.y - 20);
+		this.stateText.setPosition(this.x, this.y);
 	}
 
 	private getStateText(): string {
@@ -275,24 +270,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	private isBlockedFromBelow(): boolean {
-		if (this.body) {
-			return this.body.blocked.down;
-		} else {
-			throw new Error("Cannot access this.body because it's null");
-		}
+		return this.body?.blocked.down ? true : false;
 	}
 
 	public setCurrentMap(map: TilemapManager) {
 		this.currentMap = map;
 	}
 
-	private getGrapplingHookAnchorTile(): { x: number; y: number } | null {
+	private getGrapplingHookAnchorTile(): Phaser.Tilemaps.Tile | null {
 		if (!this.currentMap) {
 			throw new Error("Current map is not set");
 		}
-		const playerTileX = Math.floor(this.x / this.currentMap.tilemap.tileWidth);
-		const playerTileY = Math.floor(this.y / this.currentMap.tilemap.tileHeight);
-		return this.currentMap.getFirstFilledTileAbove(playerTileX, playerTileY);
+		return this.currentMap.getFirstFilledTileAbove(this.x, this.y);
 	}
 }
 
