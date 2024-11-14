@@ -24,6 +24,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private nextState: PlayerState;
 	private stateText: Phaser.GameObjects.Text;
 	private currentMap: TilemapManager;
+	private grapplingLine: Phaser.GameObjects.Line | null; // P99ee
 
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
@@ -39,6 +40,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		super(scene, x, y, "player");
 		this.currentState = PlayerState.IDLE;
 		this.nextState = PlayerState.IDLE;
+		this.grapplingLine = null; // P99ee
 
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
@@ -223,6 +225,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 						1,
 						1,
 					);
+					// Initialize and draw the vertical line
+					this.grapplingLine = this.scene.add.line(
+						this.x,
+						this.y,
+						0,
+						0,
+						0,
+						anchorTile.pixelY + anchorTile.height,
+						0xffffff,
+					);
+					this.grapplingLine.setOrigin(0.5, 0);
 				}
 			},
 			onExecute: (inputs: Inputs) => {
@@ -236,10 +249,24 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				if (!inputs.grappling) {
 					this.nextState = PlayerState.FALLING;
 				}
+				// Update the position of the vertical line
+				if (this.grapplingLine) {
+					this.grapplingLine.setTo(
+						this.x,
+						this.y,
+						this.x,
+						this.grapplingLine.geom.y2,
+					);
+				}
 			},
 			onExit: (inputs: Inputs) => {
 				// Clear existing tint
 				this.currentMap.layer.setTint(0xffffff, 0, 0);
+				// Remove the vertical line from the scene
+				if (this.grapplingLine) {
+					this.grapplingLine.destroy();
+					this.grapplingLine = null;
+				}
 			},
 			onCollision: () => {},
 		},
