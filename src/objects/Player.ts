@@ -25,7 +25,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private stateText: Phaser.GameObjects.Text;
 	private currentMap: TilemapManager;
 	private grapplingLine: Phaser.GameObjects.Line;
-
+	private anchorTile: Phaser.Tilemaps.Tile | null = null;
 	static readonly RUNNING_VELOCITY = 150;
 	static readonly GLIDING_VELOCITY = 100;
 	static readonly JUMPING_VELOCITY = 300;
@@ -214,13 +214,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		[PlayerState.GRAPPLING]: {
 			onEnter: (inputs: Inputs) => {
 				this.getBody().setVelocityX(0);
-				const anchorTile = this.getGrapplingHookAnchorTile();
-				if (anchorTile) {
+				this.anchorTile = this.getGrapplingHookAnchorTile();
+				if (this.anchorTile) {
 					// Tint the anchor tile
 					this.currentMap.layer.setTint(
 						0xff00ff,
-						anchorTile.x,
-						anchorTile.y,
+						this.anchorTile.x,
+						this.anchorTile.y,
 						1,
 						1,
 					);
@@ -231,9 +231,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 						0,
 						0,
 						0,
-						anchorTile.pixelY + this.currentMap.tilemap.tileHeight,
+						this.anchorTile.pixelY - this.y + this.height,
 						0xffffff,
 					);
+					this.grapplingLine.setLineWidth(5);
 					this.grapplingLine.setOrigin(0.5, 0);
 				}
 			},
@@ -249,12 +250,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 					this.nextState = PlayerState.FALLING;
 				}
 				// Update the position of the vertical line
-				if (this.grapplingLine) {
+				if (this.grapplingLine && this.anchorTile) {
+					this.grapplingLine.setPosition(this.x, this.y);
 					this.grapplingLine.setTo(
-						this.x,
-						this.y,
-						this.x,
-						this.grapplingLine.geom.y2,
+						0,
+						0,
+						0,
+						this.anchorTile.pixelY - this.y + this.height,
 					);
 				}
 			},
