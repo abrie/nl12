@@ -12,8 +12,8 @@ const Config = {
 };
 
 class PlayScene extends Phaser.Scene {
-	private inputManager: InputManager;
-	private player: Player;
+	private inputManager?: InputManager;
+	private player?: Player;
 
 	constructor() {
 		super({ key: "PlayScene" });
