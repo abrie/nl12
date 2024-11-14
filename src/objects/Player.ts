@@ -290,9 +290,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		if (!this.currentMap) {
 			throw new Error("Current map is not set");
 		}
-		const playerTileX = Math.floor(this.x / this.currentMap.tilemap.tileWidth);
-		const playerTileY = Math.floor(this.y / this.currentMap.tilemap.tileHeight);
-		return this.currentMap.getFirstFilledTileAbove(playerTileX, playerTileY);
+		const tile = this.currentMap.tilemap.getTileAtWorldXY(this.x, this.y);
+		if (tile) {
+			return this.currentMap.getFirstFilledTileAbove(tile.x, tile.y);
+		}
+		return null;
 	}
 }
 
