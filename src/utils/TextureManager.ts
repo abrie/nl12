@@ -21,7 +21,7 @@ class TextureManager {
     }
   }
 
-  static generateAllTextures(scene: Phaser.Scene, width: number, height: number) {
+  static generateAllTextures(scene: Phaser.Scene, width: number, height: number, numSquares: number = 1) {
     this.generateTextureIfNotExists(scene, 0x0000ff, width, height, this.Textures.PLAYER, {
       color: 0xff0000,
       thickness: 5,
@@ -33,7 +33,7 @@ class TextureManager {
     this.generateTextureIfNotExists(scene, 0xf0aa00, width, height, this.Textures.FILLED_TILE, {
       color: 0xf0ee00,
       thickness: 1,
-    });
+    }, numSquares);
   }
 }
 

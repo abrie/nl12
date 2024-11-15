@@ -16,8 +16,9 @@ class TilemapManager {
 		height: number,
 		tileWidth: number,
 		tileHeight: number,
+		numSquares: number = 1,
 	) {
-		TextureManager.generateAllTextures(scene, tileWidth, tileHeight);
+		TextureManager.generateAllTextures(scene, tileWidth, tileHeight, numSquares);
 
 		this.tilemap = scene.make.tilemap({
 			width,
@@ -73,7 +74,11 @@ class TilemapManager {
 		layer: Phaser.Tilemaps.TilemapLayer;
 		filledTileset: Phaser.Tilemaps.Tileset;
 	}) {
-		layer.setCollision(filledTileset.firstgid);
+		const filledGIDs = [];
+		for (let i = 0; i < filledTileset.total; i++) {
+			filledGIDs.push(filledTileset.firstgid + i);
+		}
+		layer.setCollision(filledGIDs);
 	}
 
 	public setTile(x: number, y: number, filled: boolean) {
@@ -118,7 +123,7 @@ class TilemapManager {
 		const startTile = this.layer.getTileAtWorldXY(worldX, worldY);
 		for (let ty = startTile.y - 1; ty >= 0; ty--) {
 			const tile = this.tilemap.getTileAt(startTile.x, ty);
-			if (tile && tile.index === this.filledTileset.firstgid) {
+			if (tile && tile.index >= this.filledTileset.firstgid && tile.index < this.filledTileset.firstgid + this.filledTileset.total) {
 				return tile;
 			}
 		}
