@@ -41,15 +41,27 @@ class TextureManager {
     width: number,
     height: number,
     name: string,
-    border?: { color: number; thickness: number }
+    border?: { color: number; thickness: number },
+    numSquares: number = 1
   ) {
     const graphics = scene.add.graphics();
-    graphics.fillStyle(color, 1);
-    graphics.fillRect(0, 0, width, height);
+    const squareWidth = width / numSquares;
 
-    if (border) {
-      graphics.lineStyle(border.thickness, border.color, 1);
-      graphics.strokeRect(0, 0, width, height);
+    for (let i = 0; i < numSquares; i++) {
+      const variationColor = Phaser.Display.Color.Interpolate.ColorWithColor(
+        Phaser.Display.Color.IntegerToColor(color),
+        Phaser.Display.Color.IntegerToColor(0xffffff),
+        numSquares,
+        i
+      );
+
+      graphics.fillStyle(Phaser.Display.Color.GetColor(variationColor.r, variationColor.g, variationColor.b), 1);
+      graphics.fillRect(i * squareWidth, 0, squareWidth, height);
+
+      if (border) {
+        graphics.lineStyle(border.thickness, border.color, 1);
+        graphics.strokeRect(i * squareWidth, 0, squareWidth, height);
+      }
     }
 
     graphics.generateTexture(name, width, height);
