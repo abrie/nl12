@@ -33,7 +33,7 @@ class TextureManager {
     this.generateTextureIfNotExists(scene, 0xf0aa00, width, height, this.Textures.FILLED_TILE, {
       color: 0xf0ee00,
       thickness: 1,
-    });
+    }, 4);
   }
 }
 
