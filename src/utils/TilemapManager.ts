@@ -73,12 +73,16 @@ class TilemapManager {
 		layer: Phaser.Tilemaps.TilemapLayer;
 		filledTileset: Phaser.Tilemaps.Tileset;
 	}) {
-		layer.setCollision(filledTileset.firstgid);
+		const filledTileGIDs = Array.from(
+			{ length: TextureManager.Textures.FILLED_TILE.count },
+			(_, i) => filledTileset.firstgid + i
+		);
+		layer.setCollision(filledTileGIDs);
 	}
 
 	public setTile(x: number, y: number, filled: boolean) {
 		const tileIndex = filled
-			? this.filledTileset.firstgid
+			? this.filledTileset.firstgid + Math.floor(Math.random() * TextureManager.Textures.FILLED_TILE.count)
 			: this.emptyTileset.firstgid;
 		this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
 	}
@@ -118,7 +122,7 @@ class TilemapManager {
 		const startTile = this.layer.getTileAtWorldXY(worldX, worldY);
 		for (let ty = startTile.y - 1; ty >= 0; ty--) {
 			const tile = this.tilemap.getTileAt(startTile.x, ty);
-			if (tile && tile.index === this.filledTileset.firstgid) {
+			if (tile && tile.index >= this.filledTileset.firstgid && tile.index < this.filledTileset.firstgid + TextureManager.Textures.FILLED_TILE.count) {
 				return tile;
 			}
 		}
