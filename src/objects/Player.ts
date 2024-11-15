@@ -26,8 +26,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	private currentMap: TilemapManager;
 	private grapplingLine: Phaser.GameObjects.Line;
 	private anchorTile: Phaser.Tilemaps.Tile | null = null;
-	static readonly RUNNING_VELOCITY = 150;
-	static readonly GLIDING_VELOCITY = 100;
+	static readonly RUNNING_VELOCITY = 250;
+	static readonly GLIDING_VELOCITY = 250;
 	static readonly JUMPING_VELOCITY = 300;
 
 	constructor(
