@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import TextureGenerator from "../utils/TextureGenerator";
+import TextureManager from "../utils/TextureManager";
 import { Inputs } from "../utils/InputManager";
 import TilemapManager from "../utils/TilemapManager";
 
@@ -44,7 +44,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
 
-		TextureGenerator.generateTexture(scene, 0x0000ff, width, height, "player", {
+		TextureManager.generateTextureIfNotExists(scene, 0x0000ff, width, height, "player", {
 			color: 0xff0000,
 			thickness: 5,
 		});
