@@ -101,7 +101,7 @@ class TextureManager {
 		const noise = new Array(width * height).fill(0).map((_, i) => {
 			const nx = (i % width) * noiseScale;
 			const ny = Math.floor(i / width) * noiseScale;
-			return Phaser.Math.PerlinNoise(nx, ny);
+			return this.customValueNoise(nx, ny);
 		});
 
 		for (let i = 0; i < noise.length; i++) {
@@ -112,6 +112,11 @@ class TextureManager {
 			graphics.fillStyle(color, 0.1);
 			graphics.fillRect(x + nx, y + ny, 1, 1);
 		}
+	}
+
+	static customValueNoise(x: number, y: number): number {
+		const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+		return n - Math.floor(n);
 	}
 }
 
