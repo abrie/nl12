@@ -53,7 +53,7 @@ class TextureManager {
 
     for (let i = 0; i < count; i++) {
       const variation = Phaser.Math.Between(-variationRange, variationRange);
-      const variedColor = Phaser.Display.Color.HSVColorWheel()[baseColor.h + variation];
+      const variedColor = Phaser.Display.Color.HSVColorWheel()[Math.round(baseColor.h) + variation];
       graphics.fillStyle(variedColor.color, 1);
       graphics.fillRect(i * width, 0, width, height);
 
