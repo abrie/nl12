@@ -24,7 +24,7 @@ class TextureManager {
 			name: "filled",
 			height: 25,
 			width: 25,
-			count: 1,
+			count: 10,
 			color: 0xf0aa00,
 			margin: 0,
 			spacing: 0,
@@ -67,9 +67,12 @@ class TextureManager {
 		},
 	) {
 		const graphics = scene.add.graphics();
-		graphics.fillStyle(texture.color, 1);
 
 		for (let i = 0; i < texture.count; i++) {
+			const variation = Phaser.Display.Color.IntegerToColor(texture.color).clone();
+			variation.darken(i * 5); // Slightly darken each subsequent rectangle
+			graphics.fillStyle(variation.color, 1);
+
 			const x = texture.margin + i * (texture.width + texture.spacing);
 			graphics.fillRect(x, texture.margin, texture.width, texture.height);
 		}
