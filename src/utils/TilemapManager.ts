@@ -7,6 +7,7 @@ class TilemapManager {
 	emptyTileset: Phaser.Tilemaps.Tileset;
 	filledTileset: Phaser.Tilemaps.Tileset;
 	layer: Phaser.Tilemaps.TilemapLayer;
+	startingGID: number = 1;
 
 	constructor() {}
 
@@ -32,11 +33,12 @@ class TilemapManager {
 			TextureManager.Textures.FILLED_TILE.height,
 			TextureManager.Textures.FILLED_TILE.margin,
 			TextureManager.Textures.FILLED_TILE.spacing,
-			1,
+			this.startingGID,
 		);
 		if (!this.filledTileset) {
 			throw new Error("Failed to create 'filled' TilesetImage");
 		}
+		this.startingGID += this.filledTileset.total;
 
 		this.emptyTileset = this.tilemap.addTilesetImage(
 			TextureManager.Textures.EMPTY_TILE.name,
@@ -45,11 +47,13 @@ class TilemapManager {
 			TextureManager.Textures.EMPTY_TILE.height,
 			TextureManager.Textures.EMPTY_TILE.margin,
 			TextureManager.Textures.EMPTY_TILE.spacing,
-			2,
+			this.startingGID,
 		);
 		if (!this.emptyTileset) {
 			throw new Error("Failed to create 'empty' TilesetImage");
 		}
+		this.startingGID += this.emptyTileset.total;
+
 		this.layer = this.tilemap.createBlankLayer("layer", [
 			this.emptyTileset,
 			this.filledTileset,
@@ -73,12 +77,19 @@ class TilemapManager {
 		layer: Phaser.Tilemaps.TilemapLayer;
 		filledTileset: Phaser.Tilemaps.Tileset;
 	}) {
-		layer.setCollision(filledTileset.firstgid);
+		const filledTileRange = Phaser.Utils.Array.NumberArray(
+			filledTileset.firstgid,
+			filledTileset.firstgid + filledTileset.total - 1,
+		);
+		layer.setCollision(filledTileRange);
 	}
 
 	public setTile(x: number, y: number, filled: boolean) {
 		const tileIndex = filled
-			? this.filledTileset.firstgid
+			? Phaser.Math.Between(
+					this.filledTileset.firstgid,
+					this.filledTileset.firstgid + this.filledTileset.total - 1,
+			  )
 			: this.emptyTileset.firstgid;
 		this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
 	}
@@ -118,7 +129,7 @@ class TilemapManager {
 		const startTile = this.layer.getTileAtWorldXY(worldX, worldY);
 		for (let ty = startTile.y - 1; ty >= 0; ty--) {
 			const tile = this.tilemap.getTileAt(startTile.x, ty);
-			if (tile && tile.index === this.filledTileset.firstgid) {
+			if (tile && tile.index >= this.filledTileset.firstgid && tile.index < this.filledTileset.firstgid + this.filledTileset.total) {
 				return tile;
 			}
 		}
