@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import TextureGenerator from "./TextureGenerator";
+import TextureManager from "./TextureManager";
 
 class TilemapManager {
 	scene: Phaser.Scene;
@@ -17,22 +17,7 @@ class TilemapManager {
 		tileWidth: number,
 		tileHeight: number,
 	) {
-		TextureGenerator.generateTexture(
-			scene,
-			0x000000,
-			tileWidth,
-			tileHeight,
-			"empty",
-			{ color: 0x000000, thickness: 1 },
-		);
-		TextureGenerator.generateTexture(
-			scene,
-			0xf0aa00,
-			tileWidth,
-			tileHeight,
-			"filled",
-			{ color: 0xf0ee00, thickness: 1 },
-		);
+		TextureManager.generateAllTextures(scene, tileWidth, tileHeight);
 
 		this.tilemap = scene.make.tilemap({
 			width,
@@ -41,7 +26,7 @@ class TilemapManager {
 			tileHeight,
 		});
 		this.filledTileset = this.tilemap.addTilesetImage(
-			"filled",
+			TextureManager.FILLED_TILE_TEXTURE,
 			undefined,
 			tileWidth,
 			tileHeight,
@@ -54,7 +39,7 @@ class TilemapManager {
 		}
 
 		this.emptyTileset = this.tilemap.addTilesetImage(
-			"empty",
+			TextureManager.EMPTY_TILE_TEXTURE,
 			undefined,
 			tileWidth,
 			tileHeight,
