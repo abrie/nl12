@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import TextureGenerator from "./TextureGenerator";
 
 class TextureManager {
   static readonly Textures = {
@@ -17,7 +16,7 @@ class TextureManager {
     border?: { color: number; thickness: number }
   ) {
     if (!scene.textures.exists(name)) {
-      TextureGenerator.generateTexture(scene, color, width, height, name, border);
+      this.generateTexture(scene, color, width, height, name, border);
     }
   }
 
@@ -34,6 +33,27 @@ class TextureManager {
       color: 0xf0ee00,
       thickness: 1,
     });
+  }
+
+  static generateTexture(
+    scene: Phaser.Scene,
+    color: number,
+    width: number,
+    height: number,
+    name: string,
+    border?: { color: number; thickness: number }
+  ) {
+    const graphics = scene.add.graphics();
+    graphics.fillStyle(color, 1);
+    graphics.fillRect(0, 0, width, height);
+
+    if (border) {
+      graphics.lineStyle(border.thickness, border.color, 1);
+      graphics.strokeRect(0, 0, width, height);
+    }
+
+    graphics.generateTexture(name, width, height);
+    graphics.destroy();
   }
 }
 
