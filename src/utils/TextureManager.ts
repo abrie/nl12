@@ -7,18 +7,6 @@ class TextureManager {
     FILLED_TILE: "filled",
   };
 
-  static generateTextureIfNotExists(
-    scene: Phaser.Scene,
-    color: number,
-    width: number,
-    height: number,
-    name: string,
-    border?: { color: number; thickness: number }
-  ) {
-    if (!scene.textures.exists(name)) {
-      this.generateTexture(scene, color, width, height, name, border);
-    }
-  }
 
   static generateAllTextures(scene: Phaser.Scene, width: number, height: number) {
     this.generateTextureIfNotExists(scene, 0x0000ff, width, height, this.Textures.PLAYER, {
@@ -35,24 +23,47 @@ class TextureManager {
     });
   }
 
+  static generateTextureIfNotExists(
+    scene: Phaser.Scene,
+    color: number,
+    width: number,
+    height: number,
+    name: string,
+    border?: { color: number; thickness: number },
+    count: number = 1,
+    variationRange: number = 0
+  ) {
+    if (!scene.textures.exists(name)) {
+      this.generateTexture(scene, color, width, height, name, border, count, variationRange);
+    }
+  }
+
   static generateTexture(
     scene: Phaser.Scene,
     color: number,
     width: number,
     height: number,
     name: string,
-    border?: { color: number; thickness: number }
+    border?: { color: number; thickness: number },
+    count: number = 1,
+    variationRange: number = 0
   ) {
     const graphics = scene.add.graphics();
-    graphics.fillStyle(color, 1);
-    graphics.fillRect(0, 0, width, height);
+    const baseColor = Phaser.Display.Color.IntegerToColor(color);
 
-    if (border) {
-      graphics.lineStyle(border.thickness, border.color, 1);
-      graphics.strokeRect(0, 0, width, height);
+    for (let i = 0; i < count; i++) {
+      const variation = Phaser.Math.Between(-variationRange, variationRange);
+      const variedColor = Phaser.Display.Color.HSVColorWheel()[baseColor.h + variation];
+      graphics.fillStyle(variedColor.color, 1);
+      graphics.fillRect(i * width, 0, width, height);
+
+      if (border) {
+        graphics.lineStyle(border.thickness, border.color, 1);
+        graphics.strokeRect(i * width, 0, width, height);
+      }
     }
 
-    graphics.generateTexture(name, width, height);
+    graphics.generateTexture(name, width * count, height);
     graphics.destroy();
   }
 }
