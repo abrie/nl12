@@ -26,7 +26,7 @@ class TilemapManager {
 			tileHeight,
 		});
 		this.filledTileset = this.tilemap.addTilesetImage(
-			TextureManager.FILLED_TILE_TEXTURE,
+			TextureManager.Textures.FILLED_TILE,
 			undefined,
 			tileWidth,
 			tileHeight,
@@ -39,7 +39,7 @@ class TilemapManager {
 		}
 
 		this.emptyTileset = this.tilemap.addTilesetImage(
-			TextureManager.EMPTY_TILE_TEXTURE,
+			TextureManager.Textures.EMPTY_TILE,
 			undefined,
 			tileWidth,
 			tileHeight,
