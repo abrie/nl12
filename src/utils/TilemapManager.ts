@@ -17,7 +17,7 @@ class TilemapManager {
 		tileWidth: number,
 		tileHeight: number,
 	) {
-		TextureManager.generateAllTextures(scene, tileWidth, tileHeight);
+		TextureManager.generateAllTextures(scene);
 
 		this.tilemap = scene.make.tilemap({
 			width,
@@ -26,12 +26,12 @@ class TilemapManager {
 			tileHeight,
 		});
 		this.filledTileset = this.tilemap.addTilesetImage(
-			TextureManager.Textures.FILLED_TILE,
+			TextureManager.Textures.FILLED_TILE.name,
 			undefined,
-			tileWidth,
-			tileHeight,
-			0,
-			0,
+			TextureManager.Textures.FILLED_TILE.width,
+			TextureManager.Textures.FILLED_TILE.height,
+			TextureManager.Textures.FILLED_TILE.margin,
+			TextureManager.Textures.FILLED_TILE.spacing,
 			1,
 		);
 		if (!this.filledTileset) {
@@ -39,12 +39,12 @@ class TilemapManager {
 		}
 
 		this.emptyTileset = this.tilemap.addTilesetImage(
-			TextureManager.Textures.EMPTY_TILE,
+			TextureManager.Textures.EMPTY_TILE.name,
 			undefined,
-			tileWidth,
-			tileHeight,
-			0,
-			0,
+			TextureManager.Textures.EMPTY_TILE.width,
+			TextureManager.Textures.EMPTY_TILE.height,
+			TextureManager.Textures.EMPTY_TILE.margin,
+			TextureManager.Textures.EMPTY_TILE.spacing,
 			2,
 		);
 		if (!this.emptyTileset) {
