@@ -64,7 +64,7 @@ class TilemapManager {
 		}
 		this.setupCollision({
 			layer: this.layer,
-			filledTileset: this.filledTileset,
+			tileSet: this.filledTileset,
 		});
 
 		this.scene = scene;
@@ -72,14 +72,14 @@ class TilemapManager {
 
 	private setupCollision({
 		layer,
-		filledTileset,
+		tileSet,
 	}: {
 		layer: Phaser.Tilemaps.TilemapLayer;
-		filledTileset: Phaser.Tilemaps.Tileset;
+		tileSet: Phaser.Tilemaps.Tileset;
 	}) {
 		const filledTileRange = Phaser.Utils.Array.NumberArray(
-			filledTileset.firstgid,
-			filledTileset.firstgid + filledTileset.total - 1,
+			tileSet.firstgid,
+			tileSet.firstgid + tileSet.total - 1,
 		);
 		layer.setCollision(filledTileRange);
 	}
@@ -89,7 +89,7 @@ class TilemapManager {
 			? Phaser.Math.Between(
 					this.filledTileset.firstgid,
 					this.filledTileset.firstgid + this.filledTileset.total - 1,
-			  )
+				)
 			: this.emptyTileset.firstgid;
 		this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
 	}
@@ -129,7 +129,11 @@ class TilemapManager {
 		const startTile = this.layer.getTileAtWorldXY(worldX, worldY);
 		for (let ty = startTile.y - 1; ty >= 0; ty--) {
 			const tile = this.tilemap.getTileAt(startTile.x, ty);
-			if (tile && tile.index >= this.filledTileset.firstgid && tile.index < this.filledTileset.firstgid + this.filledTileset.total) {
+			if (
+				tile &&
+				tile.index >= this.filledTileset.firstgid &&
+				tile.index < this.filledTileset.firstgid + this.filledTileset.total
+			) {
 				return tile;
 			}
 		}
