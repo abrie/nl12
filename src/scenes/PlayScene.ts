@@ -45,24 +45,25 @@ class PlayScene extends Phaser.Scene {
 		this.inputManager = new InputManager(this);
 
 		const playerStart = tilemapManager.findRandomNonFilledTile();
-		if (playerStart) {
-			this.player = new Player(
-				this,
-				playerStart.x * Config.TileWidth,
-				playerStart.y * Config.TileHeight,
-				Config.TileWidth,
-				Config.TileHeight,
-			);
-			this.physics.add.existing(this.player);
-			this.physics.add.collider(
-				this.player,
-				tilemapManager.layer,
-				this.handlePlayerCollision,
-				undefined,
-				this,
-			);
-			this.player.setCurrentMap(tilemapManager);
+		if (!playerStart) {
+			throw new Error("Unable to find a starting tile for the player.");
 		}
+		this.player = new Player(
+			this,
+			playerStart.x * Config.TileWidth,
+			playerStart.y * Config.TileHeight,
+			Config.TileWidth,
+			Config.TileHeight,
+		);
+		this.physics.add.existing(this.player);
+		this.physics.add.collider(
+			this.player,
+			tilemapManager.layer,
+			this.handlePlayerCollision,
+			undefined,
+			this,
+		);
+		this.player.setCurrentMap(tilemapManager);
 	}
 
 	update() {
