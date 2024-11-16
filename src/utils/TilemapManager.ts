@@ -6,6 +6,7 @@ class TilemapManager {
 	tilemap: Phaser.Tilemaps.Tilemap;
 	emptyTileset: Phaser.Tilemaps.Tileset;
 	filledTileset: Phaser.Tilemaps.Tileset;
+	lootTileset: Phaser.Tilemaps.Tileset;
 	layer: Phaser.Tilemaps.TilemapLayer;
 	startingGID: number = 1;
 
@@ -54,9 +55,24 @@ class TilemapManager {
 		}
 		this.startingGID += this.emptyTileset.total;
 
+		this.lootTileset = this.tilemap.addTilesetImage(
+			TextureManager.Textures.LOOT.name,
+			undefined,
+			TextureManager.Textures.LOOT.width,
+			TextureManager.Textures.LOOT.height,
+			TextureManager.Textures.LOOT.margin,
+			TextureManager.Textures.LOOT.spacing,
+			this.startingGID,
+		);
+		if (!this.lootTileset) {
+			throw new Error("Failed to create 'loot' TilesetImage");
+		}
+		this.startingGID += this.lootTileset.total;
+
 		this.layer = this.tilemap.createBlankLayer("layer", [
 			this.emptyTileset,
 			this.filledTileset,
+			this.lootTileset,
 		]);
 
 		if (!this.layer) {
@@ -84,14 +100,22 @@ class TilemapManager {
 		layer.setCollision(filledTileRange);
 	}
 
-	public setTile(x: number, y: number, filled: boolean) {
-		const tileIndex = filled
-			? Phaser.Math.Between(
-					this.filledTileset.firstgid,
-					this.filledTileset.firstgid + this.filledTileset.total - 1,
-				)
-			: this.emptyTileset.firstgid;
-		this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
+	public setTile(x: number, y: number, filled: boolean, loot: boolean = false) {
+		let tileIndex;
+		if (loot) {
+			tileIndex = this.lootTileset.firstgid;
+		} else {
+			tileIndex = filled
+				? Phaser.Math.Between(
+						this.filledTileset.firstgid,
+						this.filledTileset.firstgid + this.filledTileset.total - 1,
+					)
+				: this.emptyTileset.firstgid;
+		}
+		const tile = this.tilemap.putTileAt(tileIndex, x, y, true, this.layer);
+		if (loot) {
+			tile.properties.loot = true;
+		}
 	}
 
 	public populateTilemap(map: boolean[][]) {

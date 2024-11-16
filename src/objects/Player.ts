@@ -288,6 +288,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	};
 
 	handleCollision() {
+		const tile = this.currentMap.tilemap.getTileAtWorldXY(this.x, this.y);
+		if (tile && tile.properties.loot) {
+			this.currentMap.tilemap.removeTileAt(tile.x, tile.y);
+			console.log("Loot collected!");
+		}
 		this.stateMachine[this.currentState].onCollision();
 	}
 
