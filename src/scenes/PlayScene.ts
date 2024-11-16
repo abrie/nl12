@@ -14,6 +14,7 @@ const Config = {
 class PlayScene extends Phaser.Scene {
 	private inputManager?: InputManager;
 	private player?: Player;
+	private lootGroup?: Phaser.Physics.Arcade.Group;
 
 	constructor() {
 		super({ key: "PlayScene" });
@@ -64,6 +65,30 @@ class PlayScene extends Phaser.Scene {
 			this,
 		);
 		this.player.setCurrentMap(tilemapManager);
+
+		this.lootGroup = this.physics.add.group({
+			allowGravity: false,
+		});
+
+		for (let i = 0; i < 10; i++) {
+			const lootPosition = tilemapManager.findRandomNonFilledTile();
+			if (lootPosition) {
+				const loot = this.physics.add.sprite(
+					lootPosition.x * Config.TileWidth,
+					lootPosition.y * Config.TileHeight,
+					"loot",
+				);
+				this.lootGroup.add(loot);
+			}
+		}
+
+		this.physics.add.overlap(
+			this.player,
+			this.lootGroup,
+			this.handlePlayerLootOverlap,
+			undefined,
+			this,
+		);
 	}
 
 	update() {
@@ -76,6 +101,10 @@ class PlayScene extends Phaser.Scene {
 
 	private handlePlayerCollision(player: any, tile: any) {
 		(player as Player).handleCollision();
+	}
+
+	private handlePlayerLootOverlap(player: any, loot: any) {
+		loot.destroy();
 	}
 }
 

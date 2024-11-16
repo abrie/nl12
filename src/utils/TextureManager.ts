@@ -32,6 +32,16 @@ class TextureManager {
 			spacing: 0,
 			noise: true,
 		},
+		LOOT: {
+			name: "loot",
+			height: 25,
+			width: 25,
+			count: 1,
+			color: 0x00ff00,
+			margin: 0,
+			spacing: 0,
+			noise: false,
+		},
 	};
 
 	static generateTextureIfNotExists(
@@ -56,6 +66,7 @@ class TextureManager {
 		this.generateTextureIfNotExists(scene, this.Textures.PLAYER);
 		this.generateTextureIfNotExists(scene, this.Textures.EMPTY_TILE);
 		this.generateTextureIfNotExists(scene, this.Textures.FILLED_TILE);
+		this.generateTextureIfNotExists(scene, this.Textures.LOOT);
 	}
 
 	static generateTexture(
