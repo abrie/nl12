@@ -62,6 +62,7 @@ class PlayScene extends Phaser.Scene {
 				this,
 			);
 			this.player.setCurrentMap(tilemapManager);
+			this.scatterLoot(tilemapManager, 10);
 		}
 	}
 
@@ -75,6 +76,15 @@ class PlayScene extends Phaser.Scene {
 
 	private handlePlayerCollision(player: any, tile: any) {
 		(player as Player).handleCollision();
+	}
+
+	private scatterLoot(tilemapManager: TilemapManager, count: number) {
+		for (let i = 0; i < count; i++) {
+			const lootPosition = tilemapManager.findRandomNonFilledTile();
+			if (lootPosition) {
+				tilemapManager.setTile(lootPosition.x, lootPosition.y, false, true);
+			}
+		}
 	}
 }
 
