@@ -44,10 +44,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.scene.add.existing(this);
 		this.scene.physics.add.existing(this);
 
-		TextureManager.generateTextureIfNotExists(scene, 0x0000ff, width, height, "player", {
-			color: 0xff0000,
-			thickness: 5,
-		});
+		TextureManager.generateTextureIfNotExists(
+			scene,
+			0x0000ff,
+			width,
+			height,
+			"player",
+			{
+				color: 0xff0000,
+				thickness: 5,
+			},
+		);
 		this.setTexture("player");
 		this.setOrigin(0.5, 0.5);
 		this.body?.setSize(width, height);
@@ -148,7 +155,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 					return;
 				}
 				if (this.getBody().velocity.y === 0 && this.isBlockedFromBelow()) {
-					console.log("!");
 					this.nextState = PlayerState.IDLE;
 					return;
 				}
