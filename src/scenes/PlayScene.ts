@@ -51,8 +51,8 @@ class PlayScene extends Phaser.Scene {
 		}
 		this.player = new Player(
 			this,
-			playerStart.x * Config.TileWidth,
-			playerStart.y * Config.TileHeight,
+			playerStart.x * Config.TileWidth + Config.TileWidth / 2,
+			playerStart.y * Config.TileHeight + Config.TileHeight / 2,
 			Config.TileWidth,
 			Config.TileHeight,
 		);
@@ -74,8 +74,8 @@ class PlayScene extends Phaser.Scene {
 			const lootPosition = tilemapManager.findRandomNonFilledTile();
 			if (lootPosition) {
 				const loot = this.physics.add.sprite(
-					lootPosition.x * Config.TileWidth,
-					lootPosition.y * Config.TileHeight,
+					lootPosition.x * Config.TileWidth + Config.TileWidth / 2,
+					lootPosition.y * Config.TileHeight + Config.TileHeight / 2,
 					"loot",
 				);
 				this.lootGroup.add(loot);
