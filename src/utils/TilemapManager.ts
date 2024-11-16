@@ -6,6 +6,7 @@ class TilemapManager {
 	tilemap: Phaser.Tilemaps.Tilemap;
 	emptyTileset: Phaser.Tilemaps.Tileset;
 	filledTileset: Phaser.Tilemaps.Tileset;
+	lootTileset: Phaser.Tilemaps.Tileset;
 	layer: Phaser.Tilemaps.TilemapLayer;
 	startingGID: number = 1;
 
@@ -54,9 +55,24 @@ class TilemapManager {
 		}
 		this.startingGID += this.emptyTileset.total;
 
+		this.lootTileset = this.tilemap.addTilesetImage(
+			TextureManager.Textures.LOOT.name,
+			undefined,
+			TextureManager.Textures.LOOT.width,
+			TextureManager.Textures.LOOT.height,
+			TextureManager.Textures.LOOT.margin,
+			TextureManager.Textures.LOOT.spacing,
+			this.startingGID,
+		);
+		if (!this.lootTileset) {
+			throw new Error("Failed to create 'loot' TilesetImage");
+		}
+		this.startingGID += this.lootTileset.total;
+
 		this.layer = this.tilemap.createBlankLayer("layer", [
 			this.emptyTileset,
 			this.filledTileset,
+			this.lootTileset,
 		]);
 
 		if (!this.layer) {
@@ -98,6 +114,15 @@ class TilemapManager {
 		for (let y = 0; y < map.length; y++) {
 			for (let x = 0; x < map[y].length; x++) {
 				this.setTile(x, y, map[y][x]);
+			}
+		}
+	}
+
+	public scatterLoot() {
+		for (let i = 0; i < 10; i++) {
+			const tile = this.findRandomNonFilledTile();
+			if (tile) {
+				this.tilemap.putTileAt(this.lootTileset.firstgid, tile.x, tile.y, true, this.layer);
 			}
 		}
 	}

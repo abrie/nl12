@@ -35,6 +35,7 @@ class PlayScene extends Phaser.Scene {
 			Config.TileHeight,
 		);
 		tilemapManager.populateTilemap(map);
+		tilemapManager.scatterLoot();
 		this.physics.world.setBounds(
 			0,
 			0,
@@ -61,6 +62,13 @@ class PlayScene extends Phaser.Scene {
 				undefined,
 				this,
 			);
+			this.physics.add.collider(
+				this.player,
+				tilemapManager.layer,
+				this.handleLootCollision,
+				undefined,
+				this,
+			);
 			this.player.setCurrentMap(tilemapManager);
 		}
 	}
@@ -75,6 +83,13 @@ class PlayScene extends Phaser.Scene {
 
 	private handlePlayerCollision(player: any, tile: any) {
 		(player as Player).handleCollision();
+	}
+
+	private handleLootCollision(player: any, tile: any) {
+		if (tile.index === tilemapManager.lootTileset.firstgid) {
+			tilemapManager.layer.removeTileAt(tile.x, tile.y);
+			console.log("Loot collected!");
+		}
 	}
 }
 
