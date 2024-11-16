@@ -46,17 +46,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 		TextureManager.generateTextureIfNotExists(
 			scene,
-			0x0000ff,
-			width,
-			height,
-			"player",
-			{
-				color: 0xff0000,
-				thickness: 5,
-			},
+			TextureManager.Textures.PLAYER,
 		);
-		this.setTexture("player");
-		this.setOrigin(0.5, 0.5);
+		this.setTexture(TextureManager.Textures.PLAYER.name);
 		this.body?.setSize(width, height);
 
 		this.stateText = this.scene.add.text(
