@@ -139,6 +139,23 @@ class TilemapManager {
 		}
 		return null;
 	}
+
+	public isInFilledTile(x: number, y: number, width: number, height: number): boolean {
+		const topLeft = this.tilemap.getTileAtWorldXY(x, y);
+		const topRight = this.tilemap.getTileAtWorldXY(x + width, y);
+		const bottomLeft = this.tilemap.getTileAtWorldXY(x, y + height);
+		const bottomRight = this.tilemap.getTileAtWorldXY(x + width, y + height);
+
+		const filledTilesetFirstGid = this.filledTileset.firstgid;
+		const filledTilesetLastGid = this.filledTileset.firstgid + this.filledTileset.total;
+
+		return (
+			(topLeft && topLeft.index >= filledTilesetFirstGid && topLeft.index < filledTilesetLastGid) ||
+			(topRight && topRight.index >= filledTilesetFirstGid && topRight.index < filledTilesetLastGid) ||
+			(bottomLeft && bottomLeft.index >= filledTilesetFirstGid && bottomLeft.index < filledTilesetLastGid) ||
+			(bottomRight && bottomRight.index >= filledTilesetFirstGid && bottomRight.index < filledTilesetLastGid)
+		);
+	}
 }
 
 export default TilemapManager;

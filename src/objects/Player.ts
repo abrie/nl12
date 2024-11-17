@@ -10,6 +10,7 @@ enum PlayerState {
 	FALLING,
 	GLIDING,
 	GRAPPLING,
+	DEAD,
 }
 
 interface State {
@@ -283,6 +284,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			},
 			onCollision: () => {},
 		},
+		[PlayerState.DEAD]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocity(0, 0);
+				this.setTint(0xff0000); // Set player color to red
+			},
+			onExecute: (inputs: Inputs) => {},
+			onExit: (inputs: Inputs) => {},
+			onCollision: () => {},
+		},
 	};
 
 	handleCollision() {
@@ -290,6 +300,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	public updateState(inputs: Inputs) {
+		if (this.currentMap.isInFilledTile(this.x, this.y, this.width, this.height)) {
+			this.nextState = PlayerState.DEAD;
+		}
 		if (this.nextState !== this.currentState) {
 			this.stateMachine[this.currentState].onExit(inputs);
 			this.currentState = this.nextState;
@@ -314,6 +327,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "GLIDING";
 			case PlayerState.GRAPPLING:
 				return "GRAPPLING";
+			case PlayerState.DEAD:
+				return "DEAD";
 			default:
 				return "";
 		}
