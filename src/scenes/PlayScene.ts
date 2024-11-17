@@ -129,6 +129,10 @@ class PlayScene extends Phaser.Scene {
 				this.lootGroup.add(loot);
 			}
 		}
+
+		if (this.player.checkOverlapWithFilledTile()) {
+			this.player.updateState({ up: false, down: false, left: false, right: false, grappling: false, regenerate: false });
+		}
 	}
 }
 
