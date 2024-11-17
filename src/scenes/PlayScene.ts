@@ -129,6 +129,10 @@ class PlayScene extends Phaser.Scene {
 				this.lootGroup.add(loot);
 			}
 		}
+
+		if (this.player && this.tilemapManager.isInFilledTile(this.player.x, this.player.y, this.player.width, this.player.height)) {
+			this.player.updateState({ up: false, down: false, left: false, right: false, grappling: false, regenerate: false });
+		}
 	}
 }
 
