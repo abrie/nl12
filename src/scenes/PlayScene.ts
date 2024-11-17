@@ -15,6 +15,7 @@ class PlayScene extends Phaser.Scene {
 	private inputManager?: InputManager;
 	private player?: Player;
 	private lootGroup?: Phaser.Physics.Arcade.Group;
+	private tilemapManager?: TilemapManager;
 
 	constructor() {
 		super({ key: "PlayScene" });
@@ -27,15 +28,15 @@ class PlayScene extends Phaser.Scene {
 	create() {
 		let map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
 		map = MapGenerator.addBorder(map);
-		const tilemapManager = new TilemapManager();
-		tilemapManager.createTilemap(
+		this.tilemapManager = new TilemapManager();
+		this.tilemapManager.createTilemap(
 			this,
 			Config.MapWidth,
 			Config.MapHeight,
 			Config.TileWidth,
 			Config.TileHeight,
 		);
-		tilemapManager.populateTilemap(map);
+		this.tilemapManager.populateTilemap(map);
 		this.physics.world.setBounds(
 			0,
 			0,
@@ -45,7 +46,7 @@ class PlayScene extends Phaser.Scene {
 
 		this.inputManager = new InputManager(this);
 
-		const playerStart = tilemapManager.findRandomNonFilledTile();
+		const playerStart = this.tilemapManager.findRandomNonFilledTile();
 		if (!playerStart) {
 			throw new Error("Unable to find a starting tile for the player.");
 		}
@@ -59,19 +60,19 @@ class PlayScene extends Phaser.Scene {
 		this.physics.add.existing(this.player);
 		this.physics.add.collider(
 			this.player,
-			tilemapManager.layer,
+			this.tilemapManager.layer,
 			this.handlePlayerCollision,
 			undefined,
 			this,
 		);
-		this.player.setCurrentMap(tilemapManager);
+		this.player.setCurrentMap(this.tilemapManager);
 
 		this.lootGroup = this.physics.add.group({
 			allowGravity: false,
 		});
 
 		for (let i = 0; i < 10; i++) {
-			const lootPosition = tilemapManager.findRandomNonFilledTile();
+			const lootPosition = this.tilemapManager.findRandomNonFilledTile();
 			if (lootPosition) {
 				const loot = this.physics.add.sprite(
 					lootPosition.x * Config.TileWidth + Config.TileWidth / 2,
@@ -97,6 +98,9 @@ class PlayScene extends Phaser.Scene {
 		if (this.player) {
 			this.player.updateState(inputs);
 		}
+		if (inputs.regenerate) {
+			this.regenerateMap();
+		}
 	}
 
 	private handlePlayerCollision(player: any, tile: any) {
@@ -105,6 +109,26 @@ class PlayScene extends Phaser.Scene {
 
 	private handlePlayerLootOverlap(player: any, loot: any) {
 		loot.destroy();
+	}
+
+	private regenerateMap() {
+		let map = MapGenerator.generateMap(Config.MapWidth, Config.MapHeight, 3);
+		map = MapGenerator.addBorder(map);
+		this.tilemapManager.populateTilemap(map);
+
+		this.lootGroup.clear(true, true);
+
+		for (let i = 0; i < 10; i++) {
+			const lootPosition = this.tilemapManager.findRandomNonFilledTile();
+			if (lootPosition) {
+				const loot = this.physics.add.sprite(
+					lootPosition.x * Config.TileWidth + Config.TileWidth / 2,
+					lootPosition.y * Config.TileHeight + Config.TileHeight / 2,
+					"loot",
+				);
+				this.lootGroup.add(loot);
+			}
+		}
 	}
 }
 
