@@ -4,8 +4,8 @@ class TextureManager {
 	static readonly Textures = {
 		PLAYER: {
 			name: "player",
-			height: 25,
-			width: 25,
+			height: 12,
+			width: 12,
 			count: 1,
 			color: 0x0000ff,
 			margin: 0,
@@ -14,8 +14,8 @@ class TextureManager {
 		},
 		EMPTY_TILE: {
 			name: "empty",
-			height: 25,
-			width: 25,
+			height: 12,
+			width: 12,
 			count: 1,
 			color: 0x000000,
 			margin: 0,
@@ -24,8 +24,8 @@ class TextureManager {
 		},
 		FILLED_TILE: {
 			name: "filled",
-			height: 25,
-			width: 25,
+			height: 12,
+			width: 12,
 			count: 10,
 			color: 0xf0aa00,
 			margin: 0,
@@ -34,8 +34,8 @@ class TextureManager {
 		},
 		LOOT: {
 			name: "loot",
-			height: 25,
-			width: 25,
+			height: 12,
+			width: 12,
 			count: 1,
 			color: 0x00ff00,
 			margin: 0,

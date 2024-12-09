@@ -49,7 +49,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			TextureManager.Textures.PLAYER,
 		);
 		this.setTexture(TextureManager.Textures.PLAYER.name);
-		this.body?.setSize(width, height);
+		this.body?.setSize(width * 2, height * 2); // P328b
 
 		this.stateText = this.scene.add.text(
 			this.x,
