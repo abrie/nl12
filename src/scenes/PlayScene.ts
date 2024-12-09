@@ -5,10 +5,10 @@ import InputManager from "../utils/InputManager";
 import Player from "../objects/Player";
 
 const Config = {
-	MapWidth: 800 / 25,
-	MapHeight: 600 / 25,
-	TileWidth: 25,
-	TileHeight: 25,
+	MapWidth: 800 / 12,
+	MapHeight: 600 / 12,
+	TileWidth: 12,
+	TileHeight: 12,
 };
 
 class PlayScene extends Phaser.Scene {
@@ -54,8 +54,8 @@ class PlayScene extends Phaser.Scene {
 			this,
 			playerStart.x * Config.TileWidth + Config.TileWidth / 2,
 			playerStart.y * Config.TileHeight + Config.TileHeight / 2,
-			Config.TileWidth,
-			Config.TileHeight,
+			Config.TileWidth * 2,
+			Config.TileHeight * 2,
 		);
 		this.physics.add.existing(this.player);
 		this.physics.add.collider(
@@ -79,6 +79,7 @@ class PlayScene extends Phaser.Scene {
 					lootPosition.y * Config.TileHeight + Config.TileHeight / 2,
 					"loot",
 				);
+				loot.setDisplaySize(Config.TileWidth * 2, Config.TileHeight * 2);
 				this.lootGroup.add(loot);
 			}
 		}
@@ -87,7 +88,7 @@ class PlayScene extends Phaser.Scene {
 			this.player,
 			this.lootGroup,
 			this.handlePlayerLootOverlap,
-			undefined,
+				undefined,
 			this,
 		);
 	}
@@ -126,6 +127,7 @@ class PlayScene extends Phaser.Scene {
 					lootPosition.y * Config.TileHeight + Config.TileHeight / 2,
 					"loot",
 				);
+				loot.setDisplaySize(Config.TileWidth * 2, Config.TileHeight * 2);
 				this.lootGroup.add(loot);
 			}
 		}
