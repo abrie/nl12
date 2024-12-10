@@ -55,7 +55,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 		this.stateText = this.scene.add.text(
 			this.x,
 			this.y - 20,
-			this.getStateText(),
+			this.getStateText(this.currentState),
 			{
 				fontSize: "16px",
 				color: "#ffffff",
@@ -327,13 +327,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateMachine[this.currentState].onExit(inputs);
 			this.currentState = this.nextState;
 			this.stateMachine[this.currentState].onEnter(inputs);
-			this.stateText.setText(this.getStateText());
+			this.stateText.setText(this.getStateText(this.currentState));
 		}
 		this.stateText.setPosition(this.x, this.y);
 	}
 
-	private getStateText(): string {
-		switch (this.currentState) {
+	private getStateText(state: PlayerState): string {
+		switch (state) {
 			case PlayerState.IDLE:
 				return "IDLE";
 			case PlayerState.RUNNING:
