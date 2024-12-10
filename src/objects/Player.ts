@@ -10,6 +10,7 @@ enum PlayerState {
 	FALLING,
 	GLIDING,
 	GRAPPLING,
+	DEAD,
 }
 
 interface State {
@@ -283,13 +284,30 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			},
 			onCollision: () => {},
 		},
+		[PlayerState.DEAD]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocity(0, 0);
+			},
+			onExecute: (inputs: Inputs) => {
+				// In the DEAD state, ignore all inputs
+			},
+			onExit: (inputs: Inputs) => {},
+			onCollision: () => {},
+		},
 	};
 
 	handleCollision() {
-		this.stateMachine[this.currentState].onCollision();
+		if (this.isPlayerInsideFilledTile()) {
+			this.nextState = PlayerState.DEAD;
+		} else {
+			this.stateMachine[this.currentState].onCollision();
+		}
 	}
 
 	public updateState(inputs: Inputs) {
+		if (this.isPlayerInsideFilledTile()) {
+			this.nextState = PlayerState.DEAD;
+		}
 		if (this.nextState !== this.currentState) {
 			this.stateMachine[this.currentState].onExit(inputs);
 			this.currentState = this.nextState;
@@ -314,6 +332,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "GLIDING";
 			case PlayerState.GRAPPLING:
 				return "GRAPPLING";
+			case PlayerState.DEAD:
+				return "DEAD";
 			default:
 				return "";
 		}
@@ -332,6 +352,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			throw new Error("Current map is not set");
 		}
 		return this.currentMap.getFirstFilledTileAbove(this.x, this.y);
+	}
+
+	private isPlayerInsideFilledTile(): boolean {
+		const playerCenterX = this.x + this.width / 2;
+		const playerCenterY = this.y + this.height / 2;
+		const tile = this.currentMap.tilemap.getTileAtWorldXY(playerCenterX, playerCenterY);
+		return tile && tile.index >= this.currentMap.filledTileset.firstgid && tile.index < this.currentMap.filledTileset.firstgid + this.currentMap.filledTileset.total;
 	}
 }
 
