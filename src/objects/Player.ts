@@ -10,6 +10,7 @@ enum PlayerState {
 	FALLING,
 	GLIDING,
 	GRAPPLING,
+	DEAD,
 }
 
 interface State {
@@ -283,6 +284,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			},
 			onCollision: () => {},
 		},
+		[PlayerState.DEAD]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocity(0, 0);
+			},
+			onExecute: (inputs: Inputs) => {
+				// Ignore all inputs
+			},
+			onExit: (inputs: Inputs) => {},
+			onCollision: () => {},
+		},
 	};
 
 	handleCollision() {
@@ -314,6 +325,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "GLIDING";
 			case PlayerState.GRAPPLING:
 				return "GRAPPLING";
+			case PlayerState.DEAD:
+				return "DEAD";
 			default:
 				return "";
 		}
@@ -332,6 +345,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			throw new Error("Current map is not set");
 		}
 		return this.currentMap.getFirstFilledTileAbove(this.x, this.y);
+	}
+
+	public isInsideFilledTile(): boolean {
+		const tile = this.currentMap.tilemap.getTileAtWorldXY(this.x, this.y);
+		return tile && tile.index >= this.currentMap.filledTileset.firstgid && tile.index < this.currentMap.filledTileset.firstgid + this.currentMap.filledTileset.total;
 	}
 }
 
