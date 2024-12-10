@@ -5,10 +5,10 @@ import InputManager from "../utils/InputManager";
 import Player from "../objects/Player";
 
 const Config = {
-	MapWidth: 800 / 25,
-	MapHeight: 600 / 25,
-	TileWidth: 25,
-	TileHeight: 25,
+	MapWidth: 800 / 12,
+	MapHeight: 600 / 12,
+	TileWidth: 12,
+	TileHeight: 12,
 };
 
 class PlayScene extends Phaser.Scene {
