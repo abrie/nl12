@@ -312,7 +312,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			onEnter: (inputs: Inputs) => {
 				this.getBody().setVelocity(0, 0);
 			},
-			onExecute: (inputs: Inputs) => {},
+			onExecute: (inputs: Inputs) => {
+				if (this.isPlayerInFilledTile()) {
+					this.getBody().setVelocity(0, 0);
+				}
+			},
 			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
