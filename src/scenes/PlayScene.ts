@@ -97,6 +97,9 @@ class PlayScene extends Phaser.Scene {
 		const inputs = this.inputManager.getInputs();
 		if (this.player) {
 			this.player.updateState(inputs);
+			if (this.player.isPlayerInsideFilledTile()) {
+				this.player.setState(PlayerState.DEAD);
+			}
 		}
 		if (inputs.regenerate) {
 			this.regenerateMap();
