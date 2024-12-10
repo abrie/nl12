@@ -28,7 +28,7 @@ class InputManager {
 		this.inputs.left = this.cursors.left.isDown;
 		this.inputs.right = this.cursors.right.isDown;
 		this.inputs.grappling = this.grapplingKey.isDown;
-		this.inputs.regenerate = this.regenerateKey.isDown;
+		this.inputs.regenerate = Phaser.Input.Keyboard.JustDown(this.regenerateKey);
 	}
 
 	public getInputs(): Inputs {
