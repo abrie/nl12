@@ -329,6 +329,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateMachine[this.currentState].onEnter(inputs);
 			this.stateText.setText(this.getStateText(this.currentState));
 		}
+		this.stateMachine[this.currentState].onExecute(inputs);
 		this.stateText.setPosition(this.x, this.y);
 	}
 
@@ -369,10 +370,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	private isPlayerInFilledTile(): boolean {
-		const playerCenterX = this.x + this.width / 2;
-		const playerCenterY = this.y + this.height / 2;
-		const tile = this.currentMap.tilemap.getTileAtWorldXY(playerCenterX, playerCenterY);
-		return tile && tile.index >= this.currentMap.filledTileset.firstgid && tile.index < this.currentMap.filledTileset.firstgid + this.currentMap.filledTileset.total;
+		const playerCenterX = this.x;
+		const playerCenterY = this.y;
+		const tile = this.currentMap.tilemap.getTileAtWorldXY(
+			playerCenterX,
+			playerCenterY,
+		);
+		return (
+			tile &&
+			tile.index >= this.currentMap.filledTileset.firstgid &&
+			tile.index <
+				this.currentMap.filledTileset.firstgid +
+					this.currentMap.filledTileset.total
+		);
 	}
 }
 
