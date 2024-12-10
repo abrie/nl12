@@ -10,6 +10,7 @@ enum PlayerState {
 	FALLING,
 	GLIDING,
 	GRAPPLING,
+	DEAD,
 }
 
 interface State {
@@ -94,7 +95,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 			},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {},
+			onCollision: () => {
+				if (this.isPlayerInFilledTile()) {
+					this.nextState = PlayerState.DEAD;
+				}
+			},
 		},
 		[PlayerState.RUNNING]: {
 			onEnter: (inputs: Inputs) => {
@@ -128,7 +133,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 			},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {},
+			onCollision: () => {
+				if (this.isPlayerInFilledTile()) {
+					this.nextState = PlayerState.DEAD;
+				}
+			},
 		},
 		[PlayerState.JUMPING]: {
 			onEnter: (inputs: Inputs) => {
@@ -166,7 +175,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 			},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {},
+			onCollision: () => {
+				if (this.isPlayerInFilledTile()) {
+					this.nextState = PlayerState.DEAD;
+				}
+			},
 		},
 		[PlayerState.FALLING]: {
 			onEnter: (inputs: Inputs) => {
@@ -185,7 +198,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 			},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {},
+			onCollision: () => {
+				if (this.isPlayerInFilledTile()) {
+					this.nextState = PlayerState.DEAD;
+				}
+			},
 		},
 		[PlayerState.GLIDING]: {
 			onEnter: (inputs: Inputs) => {},
@@ -207,7 +224,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				}
 			},
 			onExit: (inputs: Inputs) => {},
-			onCollision: () => {},
+			onCollision: () => {
+				if (this.isPlayerInFilledTile()) {
+					this.nextState = PlayerState.DEAD;
+				}
+			},
 		},
 		[PlayerState.GRAPPLING]: {
 			onEnter: (inputs: Inputs) => {
@@ -281,6 +302,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 					});
 				}
 			},
+			onCollision: () => {
+				if (this.isPlayerInFilledTile()) {
+					this.nextState = PlayerState.DEAD;
+				}
+			},
+		},
+		[PlayerState.DEAD]: {
+			onEnter: (inputs: Inputs) => {
+				this.getBody().setVelocity(0, 0);
+			},
+			onExecute: (inputs: Inputs) => {},
+			onExit: (inputs: Inputs) => {},
 			onCollision: () => {},
 		},
 	};
@@ -296,7 +329,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			this.stateMachine[this.currentState].onEnter(inputs);
 			this.stateText.setText(this.getStateText());
 		}
-		this.stateMachine[this.currentState].onExecute(inputs);
 		this.stateText.setPosition(this.x, this.y);
 	}
 
@@ -314,6 +346,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 				return "GLIDING";
 			case PlayerState.GRAPPLING:
 				return "GRAPPLING";
+			case PlayerState.DEAD:
+				return "DEAD";
 			default:
 				return "";
 		}
@@ -332,6 +366,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 			throw new Error("Current map is not set");
 		}
 		return this.currentMap.getFirstFilledTileAbove(this.x, this.y);
+	}
+
+	private isPlayerInFilledTile(): boolean {
+		const playerCenterX = this.x + this.width / 2;
+		const playerCenterY = this.y + this.height / 2;
+		const tile = this.currentMap.tilemap.getTileAtWorldXY(playerCenterX, playerCenterY);
+		return tile && tile.index >= this.currentMap.filledTileset.firstgid && tile.index < this.currentMap.filledTileset.firstgid + this.currentMap.filledTileset.total;
 	}
 }
 
